@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 const PASSWORD_MIN = 6;
 const PASSWORD_MAX = 128;
@@ -10,7 +10,7 @@ function validatePassword(p: string) {
   return p.length >= PASSWORD_MIN && p.length <= PASSWORD_MAX;
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get("token");
@@ -78,7 +78,6 @@ export default function ResetPasswordPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-
         <h1 className="text-2xl font-semibold text-[#1B3A5B] mb-3">
           Reset your password
         </h1>
@@ -168,5 +167,19 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

@@ -1,9 +1,13 @@
 
 "use client";
 
-export default function AnimatedLogoLoader() {
+type Props = {
+  fullScreen?: boolean;
+};
+
+export default function AnimatedLogoLoader({ fullScreen = false }: Props) {
   return (
-    <div className="loader-wrap">
+    <div className={`loader-wrap ${fullScreen ? "fullscreen" : "inline"}`}>
       <svg
         width="260"
         height="90"
@@ -69,13 +73,23 @@ export default function AnimatedLogoLoader() {
 
       <style jsx>{`
         .loader-wrap {
-          position: fixed;
-          inset: 0;
-          background: #f5f8fc;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
+        }
+
+        .loader-wrap.inline {
+          position: relative;
+          background: transparent;
+          width: 100%;
+          height: 100%;
+        }
+
+        .loader-wrap.fullscreen {
+          position: fixed;
+          inset: 0;
+          background: #f5f8fc;
           z-index: 9999;
         }
 

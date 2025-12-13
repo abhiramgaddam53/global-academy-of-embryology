@@ -1,8 +1,9 @@
 // lib/auth.ts
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
+import { SignOptions } from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET || "";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
 const COOKIE_NAME = process.env.COOKIE_NAME || "token";
 const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "900", 10);
@@ -10,7 +11,9 @@ const COOKIE_MAX_AGE = parseInt(process.env.COOKIE_MAX_AGE || "900", 10);
 if (!JWT_SECRET) throw new Error("Please set JWT_SECRET in env");
 
 export function signToken(payload: Record<string, unknown>) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SECRET as string, { 
+    expiresIn: JWT_EXPIRES_IN 
+  } as any);
 }
 
 export function verifyToken(token: string) {

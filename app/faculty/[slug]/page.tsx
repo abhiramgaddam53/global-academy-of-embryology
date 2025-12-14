@@ -212,13 +212,11 @@ function generateSlug(name: string): string {
 }
 
 // 1. Generate Static Params 
-// Generates paths for ALL faculty by converting their names to slugs on the fly
 export async function generateStaticParams() {
   await connectToDB();
   const facultyMembers = await Faculty.find({}).select("name slug").lean();
   
   return facultyMembers.map((member: any) => ({
-    // Use saved slug OR generate one from name
     slug: member.slug || generateSlug(member.name),
   }));
 }
@@ -238,12 +236,13 @@ export default async function FacultyProfile({
   let doctor = await Faculty.findOne({ slug }).lean();
 
   // 2. If not found, fetch ALL and find the one whose generated slug matches
-  // (This handles cases where 'slug' field is missing in DB)
   if (!doctor) {
     const allFaculty = await Faculty.find({}).lean();
-    doctor = allFaculty.find((doc: any) => 
+    const found = allFaculty.find((doc: any) => 
       (doc.slug === slug) || (generateSlug(doc.name) === slug)
     );
+    // ✅ FIX: Convert 'undefined' to 'null' to match Mongoose type
+    doctor = found || null; 
   }
 
   if (!doctor) return notFound();
@@ -252,7 +251,7 @@ export default async function FacultyProfile({
     <main className="bg-white min-h-screen font-sans text-slate-900 selection:bg-[#0F172A] selection:text-white">
       
       {/* ================= HERO SECTION ================= */}
-      <section className="relative pt-32 pb-20 bg-gradient- from-[#1a3052]   overflow-hidden">
+      <section className="relative pt-32 pb-20 bg-[#020617] overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 z-0">
           <Image 

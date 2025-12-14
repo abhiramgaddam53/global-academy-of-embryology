@@ -1,5 +1,5 @@
 // lib/auth.ts
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import cookie from "cookie";
 import bcrypt from "bcryptjs";
 
@@ -22,7 +22,9 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 // JWT functions
 export function signToken(payload: Record<string, unknown>) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  // Cast to 'any' to bypass the strict StringValue type check
+  const options: SignOptions = { expiresIn: JWT_EXPIRES_IN as any };
+  return jwt.sign(payload, JWT_SECRET, options);
 }
 
 export function verifyToken(token: string) {
@@ -35,7 +37,9 @@ export function verifyToken(token: string) {
 
 // JWT alias for compatibility
 export function signJwt(payload: Record<string, unknown>, expiresIn?: string) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn || JWT_EXPIRES_IN });
+  // Cast to 'any' here as well
+  const options: SignOptions = { expiresIn: (expiresIn || JWT_EXPIRES_IN) as any };
+  return jwt.sign(payload, JWT_SECRET, options);
 }
 
 export function verifyJwt(token: string) {

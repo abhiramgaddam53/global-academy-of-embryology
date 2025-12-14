@@ -1,102 +1,122 @@
-"use client"; 
-import Link from "next/link";
-import Image from "next/image"; 
-import { faculty } from "./data"; 
+"use client";
+
+import { useEffect, useState } from "react";
+import Navbar from "@/app/components/Navbar";
+import FacultyCard from "@/app/components/FacultyCard";
+import { Loader2, Users } from "lucide-react";
+import Image from "next/image";
+
+// Define the type based on your API response
+export interface FacultyMember {
+  _id: string; // MongoDB ID
+  slug: string; // Ensure your API returns this or generate it
+  name: string;
+  designation: string;
+  specialization: string;
+  experience: string;
+  image: string;
+  education: string;
+  bio: string;
+  achievements: string[];
+  email: string;
+}
 
 export default function FacultyPage() {
-   
+  const [faculty, setFaculty] = useState<FacultyMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFaculty() {
+      try {
+        const res = await fetch("/api/faculty");
+        const json = await res.json();
+        
+        if (json.success) {
+          // Map API data to ensure it matches the FacultyCard props structure if needed
+          // Assuming API returns array in json.data or json.faculty
+          const data = Array.isArray(json.data) ? json.data : (json.faculty || []);
+          
+          // Generate slug if missing (temporary fix, ideally API sends it)
+          const processedData = data.map((member: any) => ({
+            ...member,
+            id: member._id,
+            slug: member.slug || member.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+          }));
+          
+          setFaculty(processedData);
+        }
+      } catch (err) {
+        console.error("Failed to fetch faculty", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFaculty();
+  }, []);
+
   return (
-    <main
-       
-      className="bg-white text-[#0F172A] min-h-screen pt-24"
-    >
-      {/* HEADER */}
-      <section className="bg-blue-50    text-[#1B3A5B]">
-        <div className="max-w-7xl mx-auto px-6 py-16 text-center hero-content">
-          <p className="text-xs uppercase tracking-[0.25em] text-[#1B3A5B]/80 mb-3">
-            Faculty • Embryology & ART
+    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-[#0F172A] selection:text-white">
+      <Navbar />
+
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative pt-40 pb-32 overflow-hidden bg-[#020617]">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image 
+             src="/hero-bg.webp" 
+             alt="Faculty Background" 
+             fill
+             className="object-cover opacity-40 mix-blend-overlay"
+             unoptimized
+          />
+          <div className="absolute inset-0  bg-gradient-to-t from-[#18417f] via-[#0f3162]  to-transparent" />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-6 text-center">
+          <p className="text-[#2DD4BF] tracking-[0.2em] uppercase text-xs font-bold mb-6 animate-fade-in">
+             World-Class Expertise
           </p>
-          <h1 className="text-3xl md:text-5xl font-semibold mb-4">
-            Our Faculty
+          <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
+            Our <span className="italic font-light text-slate-400">Faculty.</span>
           </h1>
-          <p className="max-w-3xl mx-auto text-sm md:text-base text-gray-600">
-            Meet our team of experienced doctors and clinical embryologists
-            who are shaping the future of reproductive medicine and assisted
-            reproductive technology.
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
+            Meet the pioneers, researchers, and clinical specialists shaping the global standards of embryology education.
           </p>
         </div>
       </section>
 
-      {/* FACULTY GRID */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="mb-6 flex items-center justify-between text-xs text-gray-500">
-          <span>Showing {faculty.length} faculty members</span>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {faculty.map((doc) => (
-            <Link
-              key={doc.id}
-              href={`/faculty/${doc.slug}`}
-              className="faculty-card group bg-slate-50 border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-[#27B19B]/70 transition duration-200 flex flex-col cursor-pointer"
-            >
-              {/* IMAGE */}
-              <div className="flex justify-center mb-4">
-                <div className="relative w-28 h-28">
-                  <div className="absolute inset-0 rounded-full bg-[#27B19B]/10 blur-xl group-hover:blur-2xl transition" />
-                  <div className="relative w-full h-full rounded-full overflow-hidden bg-slate-200 border border-white shadow-sm">
-                    <Image
-                      src={doc.image}
-                      alt={doc.name}
-                      width={112}
-                      height={112}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                  </div>
+      {/* ================= CONTENT SECTION ================= */}
+      <section className="py-24 bg-[#F8FAFC]">
+        <div className="container mx-auto px-6 -mt-24 relative z-20">
+          
+          {loading ? (
+            <div className="min-h-[400px] flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-200 shadow-xl">
+              <Loader2 className="animate-spin text-[#0D9488] mb-4" size={40} />
+              <p className="text-slate-500 font-serif italic">Loading faculty profiles...</p>
+            </div>
+          ) : faculty.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {faculty.map((member) => (
+                <div key={member._id} className="h-full">
+                   {/* Using the consistent FacultyCard component */}
+                   <FacultyCard faculty={member} />
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-3xl p-16 text-center border border-dashed border-slate-300 shadow-sm">
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="text-slate-400" size={32} />
               </div>
+              <h3 className="text-xl font-serif text-[#0F172A] mb-2">No Faculty Found</h3>
+              <p className="text-slate-500 font-light">Our list of experts is currently being updated.</p>
+            </div>
+          )}
 
-              {/* TEXT */}
-              <div className="text-center flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold mb-1 text-slate-900">
-                  {doc.name}
-                </h3>
-
-                <p className="text-xs uppercase tracking-wide text-[#27B19B] mb-1">
-                  {doc.designation}
-                </p>
-
-                <p className="text-sm text-gray-600 mb-1">
-                  {doc.specialization}
-                </p>
-
-                <p className="text-xs text-gray-500 mb-3">
-                  Experience: {doc.experience}
-                </p>
-
-                {/* Tags / highlights */}
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  <span className="px-3 py-1 rounded-full bg-white border text-[11px] text-slate-600">
-                    Clinical Embryologist
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white border text-[11px] text-slate-600">
-                    ART Specialist
-                  </span>
-                </div>
-
-                <div className="mt-auto">
-                  <span className="inline-flex items-center justify-center gap-1 text-xs font-medium rounded-full px-4 py-2 bg-[#27B19B] text-white group-hover:bg-[#1ea08b] transition">
-                    View Full Profile
-                    <span className="translate-x-0 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       </section>
-    </main>
+
+    </div>
   );
 }

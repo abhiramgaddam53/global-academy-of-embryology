@@ -13,7 +13,7 @@ export default function RootLayout({
           <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
         <title>Global Academy Embryology</title>
       </head>
-      <body className="bg-white text-[#1B3A5B]">
+      <body className="bg-white   text-[#1B3A5B]">
         <Navbar />
         <main className=" ">{children}</main>
       </body>

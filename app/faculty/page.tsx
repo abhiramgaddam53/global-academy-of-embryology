@@ -57,8 +57,7 @@ export default function FacultyPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-[#0F172A] selection:text-white">
-      <Navbar />
-
+ 
       {/* ================= HERO SECTION ================= */}
       <section className="relative pt-40 pb-32 overflow-hidden bg-[#020617]">
         {/* Background Image */}

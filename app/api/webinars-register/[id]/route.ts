@@ -83,6 +83,8 @@
 //   // return new Response("OK");
 
 // }
+
+
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Webinar from "@/app/models/Webinar";

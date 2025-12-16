@@ -638,7 +638,7 @@ export default function AboutPage() {
                
                {/* Image */}
                <div className="md:col-span-5 lg:col-span-4 order-2 md:order-1 relative">
-                  <div className="aspect-[3/4] bg-slate-100 relative grayscale hover:grayscale-0 transition-all duration-700">
+                  <div className="aspect-[3/4] bg-slate-100 relative md:grayscale md:hover:grayscale-0 transition-all duration-700">
                      <Image 
                         src="/founder.webp" 
                         alt="Founder" 
@@ -648,8 +648,8 @@ export default function AboutPage() {
                      />
                   </div>
                   <div className="absolute -bottom-6 -right-6 bg-white p-6 shadow-xl border border-slate-100 hidden md:block">
-                     <p className="font-serif text-lg text-[#0F172A]">Dr. Lenin Babu</p>
-                     <p className="text-[#0D9488] text-xs uppercase tracking-wider font-bold mt-1">Scientific Director</p>
+                     <p className="font-serif text-lg text-[#0F172A]">Dr. V.Lenin Babu</p>
+                     <p className="text-[#0D9488] text-xs uppercase tracking-wider font-bold mt-1">Founder</p>
                   </div>
                </div>
 
@@ -674,34 +674,7 @@ export default function AboutPage() {
       {/* =========================================
           7. ADVISORY BOARD: Clean List
       ========================================= */}
-      <section className="py-24 bg-[#F8FAFC] border-t border-slate-200">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-             <h2 className="text-3xl md:text-4xl font-serif text-[#0F172A] mb-4">Advisory Board</h2>
-             <p className="text-slate-500 font-light">
-               A distinguished panel of international experts guiding our scientific and academic direction.
-             </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-white p-6 border border-slate-200 hover:border-[#0D9488]/50 transition-colors group text-center">
-                <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full mb-4 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 relative">
-                   {/* Placeholder for Advisor Image */}
-                   <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
-                      <Users size={24} />
-                   </div>
-                </div>
-                <h4 className="font-serif text-lg text-[#0F172A]">Dr. Advisor Name</h4>
-                <p className="text-[#0D9488] text-[10px] font-bold uppercase tracking-widest mb-2">Scientific Lead</p>
-                <p className="text-slate-500 text-sm font-light">
-                  Senior Clinical Embryologist.
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    
 
       {/* =========================================
           8. CTA: Global Fraternity

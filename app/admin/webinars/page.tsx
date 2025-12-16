@@ -199,7 +199,7 @@ export default function AdminWebinarsPage() {
                     {/* Actions */}
                     <div className="flex items-center gap-2 border-l border-slate-100 pl-6">
                       <Link 
-                        href={`/admin/webinars/edit/${webinar._id}`}
+                        href={`/admin/webinars/${webinar._id}`}
                         className="p-2 text-slate-400 hover:text-[#1B3A5B] hover:bg-slate-100 rounded-lg transition-colors"
                         title="Edit"
                       >

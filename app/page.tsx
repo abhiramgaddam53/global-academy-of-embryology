@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Globe, ChevronRight, Calendar, Microscope } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Globe, ChevronRight, Calendar, Microscope, Users } from "lucide-react";
 import { connectToDB } from "@/lib/mongodb";
 import Webinar from "@/app/models/Webinar";
 import Faculty from "@/app/models/Faculty";
+import Leadership from "./components/LeaderShip";
 
 // --- Data Fetching ---
 async function getHomeData() {
@@ -250,69 +251,104 @@ export default async function HomePage() {
       {/* =========================================
           5. GOVERNING COUNCIL: Clean Grid
       ========================================= */}
-      <section className="py-24 bg-white">
+       <section className="py-24 bg-[#F8FAFC] border-t border-slate-200">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <div className="max-w-xl">
-               <h2 className="text-3xl md:text-4xl font-serif text-[#0F172A] mb-4">The Governing Council</h2>
-               <p className="text-slate-500 font-light">
-                 Our leadership comprises the most respected names in reproductive medicine, steering global policy and curriculum standards.
-               </p>
-            </div>
-            <Link href="/about" className="hidden md:block text-sm font-bold text-[#0F172A] border-b border-[#0F172A] hover:text-[#0D9488] hover:border-[#0D9488] transition-all">
-              View All Members
-            </Link>
-          </div>
+        <div className="container mx-auto px-6">
+  <div className="text-center mb-16 max-w-3xl mx-auto">
+    <h2 className="text-3xl md:text-4xl font-serif text-[#0F172A] mb-6">
+      Visionaries Behind GAE
+    </h2>
+    
+    <p className="text-xl  md:text-2xl font-serif italic text-[#1B3A5B] leading-relaxed relative inline-block">
+      <span className="text-[#27B19B] opacity-40 mr-2">"</span>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {visionaries.length > 0 ? visionaries.map((leader: any) => (
-              <div key={leader._id} className="group">
-                <div className="relative aspect-[4/5] bg-slate-100 mb-6 overflow-hidden">
-                  <Image 
-                    src={leader.image || "/founder.webp"} 
-                    alt={leader.name} 
-                    fill 
-                    className="object-cover transition-transform duration-700 group-hover:scale-105 desaturate group-hover:desaturate-0"
-                    unoptimized
-                  />
-                </div>
-                <div>
-                   <h3 className="text-xl font-serif text-[#0F172A] mb-1">{leader.name}</h3>
-                   <p className="text-[10px] font-bold text-[#0D9488] uppercase tracking-widest mb-3">{leader.designation}</p>
-                   <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 font-light border-l-2 border-slate-100 pl-3">
-                     {leader.bio || "A distinguished leader in reproductive medicine contributing to global policy."}
-                   </p>
-                </div>
-              </div>
-            )) : (
-              <div className="col-span-3 text-center py-12 border border-dashed border-slate-200">
-                 <p className="text-slate-400 italic font-serif">Leadership council is being updated.</p>
-              </div>
-            )}
+      <span className="bg-[#42ecd0]/20 " >  This is not just an organization, but a family of embryologists united for a cause.</span>
+      <span className="text-[#27B19B] opacity-40 ml-2">"</span>
+    </p>
+  </div>
+</div>
+
+    <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-8">
+      {[{
+        name: "Mr. V. Hemanth",
+        role: "Associate Founder",
+        desc: "Visionary Leader",
+      },
+        {
+          name: "Mr. Fyzullah Syed",
+        role: "Associate Founder",
+        desc: "Visionary Leader", 
+        },
+
+        {
+          name: "Mr. B. Siddesh",
+          role: "Co-Founder",
+          desc: "Visionary Leader",
+        },
+        {
+          name: "Mr. Balu",
+          role: "Co-Founder",
+          desc: "Strategic Operations",
+        },
+        {
+          name: "Mr. Nishanth Singh",
+          role: "Co-Founder",
+          desc: "Technical Director",
+        },
+        {
+          name: "Mr. P. Midhun Chakravarthy",
+          role: "Founding Member",
+          desc: "Core Initiative Lead",
+        },
+        {
+          name: "Dr. Swapna Srinath",
+          role: "Chief Clinical Advisor",
+          desc: "Clinical Excellence",
+        },
+        {
+          name: "Dr. Charulata Chatterjee",
+          role: "Chief Scientific Advisor",
+          desc: "Research & Innovation",
+        },
+        {
+          name: "Mr. T. Suresh Kumar",
+          role: "Advisor – Embryology",
+          desc: "Senior Embryologist",
+        },
+        {
+          name: "Ms. Naga Deepthi",
+          role: "Content Creator",
+          desc: "Creative Strategy",
+        },
+      ].map((member, index) => (
+        <div
+          key={index}
+          className="bg-white p-6 border border-slate-200 hover:border-[#0D9488]/50 transition-colors group text-center"
+        >
+          <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full mb-4 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 relative">
+            {/* Placeholder for Advisor Image */}
+            <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
+              <Users size={24} />
+            </div>
+            {/* Uncomment below when you have images:
+                <img src={`/team/${member.name.toLowerCase().replace(/ /g, '-')}.jpg`} alt={member.name} className="w-full h-full object-cover" />
+            */}
           </div>
+          <h4 className="font-serif text-lg text-[#0F172A] mb-1">{member.name}</h4>
+          <p className="text-[#0D9488] text-[10px] font-bold uppercase tracking-widest mb-2">
+            {member.role}
+          </p>
+          <p className="text-slate-500 text-sm font-light">{member.desc}</p>
+        </div>
+      ))}
+    </div>
         </div>
       </section>
 
       {/* =========================================
           6. FOOTER CTA: Membership
       ========================================= */}
-      <section className="py-24 bg-[#F8FAFC] border-t border-slate-200">
-         <div className="container mx-auto px-6 text-center max-w-3xl">
-            <Globe size={40} className="mx-auto text-[#0F172A] mb-6" strokeWidth={1} />
-            <h2 className="text-3xl md:text-4xl font-serif text-[#0F172A] mb-6">Join the Global Fraternity</h2>
-            <p className="text-slate-600 text-lg font-light mb-10 leading-relaxed">
-              Connect with leading researchers, access exclusive journals, and contribute to the global standards of assisted reproduction.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-               <Link href="/contact" className="px-10 py-4 bg-[#0F172A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#1E293B] transition-colors shadow-lg">
-                  Apply for Membership
-               </Link>
-               <Link href="/about" className="px-10 py-4 bg-white border border-slate-200 text-[#0F172A] text-xs font-bold uppercase tracking-widest hover:border-[#0F172A] transition-colors">
-                  Contact Secretariat
-               </Link>
-            </div>
-         </div>
-      </section>
+       <Leadership></Leadership>
 
     </main>
   );

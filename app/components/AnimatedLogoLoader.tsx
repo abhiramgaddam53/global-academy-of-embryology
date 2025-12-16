@@ -1,4 +1,3 @@
-
 "use client";
 
 export default function AnimatedLogoLoader() {
@@ -12,21 +11,25 @@ export default function AnimatedLogoLoader() {
         xmlns="http://www.w3.org/2000/svg"
         className="logo-svg"
       >
-        {/* DNA LEFT */}
+        {/* DNA Strand 1 (Blue) */}
         <path
           d="M80 20 C20 60, 20 120, 80 160"
           stroke="#1B3A5B"
           strokeWidth="10"
-          fill="none"
+          strokeLinecap="round"
+          className="strand strand-left"
         />
+        
+        {/* DNA Strand 2 (Teal) */}
         <path
           d="M120 20 C180 60, 180 120, 120 160"
           stroke="#27B19B"
           strokeWidth="10"
-          fill="none"
+          strokeLinecap="round"
+          className="strand strand-right"
         />
 
-        {/* DNA Rungs */}
+        {/* DNA Rungs (Looping Pulse) */}
         {Array.from({ length: 7 }).map((_, i) => (
           <line
             key={i}
@@ -35,43 +38,48 @@ export default function AnimatedLogoLoader() {
             x2="118"
             y2={35 + i * 18}
             stroke="#1B3A5B"
-            strokeWidth="4"
+            strokeWidth="5"
+            strokeLinecap="round"
             className="rung"
-            style={{ animationDelay: `${i * 0.12}s` }}
+            style={{ animationDelay: `${i * 0.15}s` }}
           />
         ))}
 
-        {/* Academy Text */}
-        <text
-          x="200"
-          y="75"
-          fontSize="38"
-          fontWeight="700"
-          fill="#1B3A5B"
-          className="text-main"
-        >
-          Global Academy
-        </text>
+        {/* Text Group */}
+        <g className="text-group">
+          <text
+            x="200"
+            y="75"
+            fontSize="38"
+            fontWeight="700"
+            fill="#1B3A5B"
+            fontFamily="sans-serif"
+          >
+            Global Academy
+          </text>
 
-        <text
-          x="200"
-          y="120"
-          fontSize="30"
-          fontWeight="600"
-          fill="#27B19B"
-          className="text-sub"
-        >
-          of Embryology
-        </text>
+          <text
+            x="200"
+            y="120"
+            fontSize="30"
+            fontWeight="600"
+            fill="#27B19B"
+            fontFamily="sans-serif"
+          >
+            of Embryology
+          </text>
+        </g>
       </svg>
 
-      <p className="loading-text">Loading...</p>
+      {/* Loading Status Text */}
+      <p className="loading-label">Initializing...</p>
 
       <style jsx>{`
         .loader-wrap {
           position: fixed;
           inset: 0;
-          background: #f5f8fc;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(5px);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -79,87 +87,61 @@ export default function AnimatedLogoLoader() {
           z-index: 9999;
         }
 
-        .logo-svg {
-          overflow: visible;
+        /* 1. Draw DNA Strands */
+        .strand {
+          stroke-dasharray: 400;
+          stroke-dashoffset: 400;
+          animation: drawStrand 2s ease-out forwards;
+        }
+        
+        .strand-right {
+          animation-delay: 0.2s;
         }
 
-        /* DNA animation */
-        .logo-svg path {
-          stroke-dasharray: 600;
-          stroke-dashoffset: 600;
-          animation: draw 1.6s ease forwards;
+        @keyframes drawStrand {
+          to { stroke-dashoffset: 0; }
         }
 
-        .logo-svg path:nth-child(2) {
-          animation-delay: 0.3s;
-        }
-
-        @keyframes draw {
-          to {
-            stroke-dashoffset: 0;
-          }
-        }
-
-        /* Rungs pulse */
+        /* 2. Pulse Rungs Continuously */
         .rung {
+          opacity: 0.1;
+          animation: pulseRung 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseRung {
+          0% { opacity: 0.1; stroke: #1B3A5B; }
+          50% { opacity: 1; stroke: #27B19B; } /* Changes color briefly */
+          100% { opacity: 0.1; stroke: #1B3A5B; }
+        }
+
+        /* 3. Fade in Text */
+        .text-group {
           opacity: 0;
-          animation: pulse 1.4s ease-in-out infinite;
+          transform: translateX(10px);
+          animation: fadeInText 1s ease forwards 0.5s;
         }
 
-        @keyframes pulse {
-          0% {
-            opacity: 0;
-            transform: scaleX(0.2);
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-            transform: scaleX(1);
-          }
-        }
-
-        /* Text reveal */
-        .text-main {
-          opacity: 0;
-          transform: translateX(-10px);
-          animation: slideIn 0.8s ease forwards;
-          animation-delay: 0.9s;
-        }
-
-        .text-sub {
-          opacity: 0;
-          transform: translateX(-10px);
-          animation: slideIn 0.8s ease forwards;
-          animation-delay: 1.2s;
-        }
-
-        @keyframes slideIn {
+        @keyframes fadeInText {
           to {
             opacity: 1;
             transform: translateX(0);
           }
         }
 
-        .loading-text {
-          margin-top: 18px;
-          font-size: 13px;
-          letter-spacing: 0.3em;
+        /* 4. Bottom Label Blink */
+        .loading-label {
+          margin-top: 20px;
+          font-family: sans-serif;
+          font-size: 12px;
+          letter-spacing: 2px;
           text-transform: uppercase;
-          color: #1b3a5b;
-          opacity: 0.75;
-          animation: blink 1.4s infinite;
+          color: #64748b;
+          animation: blink 1.5s infinite ease-in-out;
         }
 
         @keyframes blink {
-          0%,
-          100% {
-            opacity: 0.4;
-          }
-          50% {
-            opacity: 1;
-          }
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
         }
       `}</style>
     </div>

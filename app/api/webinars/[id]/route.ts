@@ -189,6 +189,7 @@
 //     );
 //   }
 // }
+
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectToDB } from "@/lib/mongodb";
@@ -227,10 +228,11 @@ export async function GET(
 
    const now = new Date();
    const startTime = new Date(webinar.dateTime);
-
+   const endOfDay = new Date(startTime);
+   endOfDay.setHours(23, 59, 59, 999); 
    // ✅ TIME-BASED FLAGS
    const isStarted = now >= startTime;
-   const isPast = now >= startTime;
+   const isPast = now >= endOfDay;
 
    const registrations = webinar.registrations || [];
 

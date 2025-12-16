@@ -129,10 +129,10 @@ export default function LoginPage() {
       const next = url.searchParams.get("next");
 
       if (data?.user?.role === "admin") {
-        router.push(next || "/admin/dashboard");
+        router.push(next || "/admin/");
         return;
       }
-      router.push(next || "/dashboard");
+      router.push(next || "/");
     } catch (err) {
       console.error(err);
       setServerError("Network error. Please check your connection.");

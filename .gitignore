@@ -61,8 +61,7 @@ backup/
 # Uploads / Certificates / Media
 # ===============================
 uploads/
-public/uploads/
-certificates/
+public/uploads/ 
 tmp/
 temp/
 api-tester.html

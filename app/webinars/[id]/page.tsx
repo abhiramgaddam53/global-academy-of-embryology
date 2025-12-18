@@ -332,25 +332,25 @@
 //     </div>
 //   );
 // }
-
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   CalendarDays,
   Clock,
+  Users,
   Video,
   ChevronLeft,
   PlayCircle,
+  Share2,
   MapPin,
   CheckCircle2,
+  AlertCircle,
   MonitorPlay,
   Loader2,
-  Users,
-  Share2
 } from "lucide-react";
-// import Navbar from "@/app/components/Navbar"; 
+import Navbar from "@/app/components/Navbar";
 
 /* ================= TYPES ================= */
 interface Webinar {
@@ -361,9 +361,11 @@ interface Webinar {
   dateTime: string;
   mentors: string[];
   
+  // Links (Controlled by backend visibility rules)
   webinarLink?: string;  
   recordedLink?: string;
 
+  // Status Flags
   isRegistered: boolean;
   isStarted: boolean; 
   isPast: boolean;   
@@ -379,61 +381,51 @@ export default function WebinarDetailsPage() {
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState("");
 
-  /* ================= FETCH DATA FUNCTION ================= */
-  const fetchWebinarData = useCallback(async () => {
-    try {
-      // We assume the backend handles cookies automatically
-      const res = await fetch(`/api/webinars/${id}`, { cache: "no-store" });
-      if (!res.ok) throw new Error("Webinar not found");
-      const data = await res.json();
-      setWebinar(data);
-    } catch (err) {
-      console.error(err);
-      setError("Could not load webinar details.");
-    } finally {
-      setLoading(false);
-    }
+  /* ================= FETCH WEBINAR DATA ================= */
+  useEffect(() => {
+    if (!id) return;
+
+    fetch(`/api/webinars/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Webinar not found");
+        return res.json();
+      })
+      .then((data) => {
+        setWebinar(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Could not load webinar details.");
+        setLoading(false);
+      });
   }, [id]);
 
-  // Initial Load
-  useEffect(() => {
-    if (id) fetchWebinarData();
-  }, [id, fetchWebinarData]);
-
-  /* ================= HANDLE REGISTRATION (FIXED) ================= */
+  /* ================= HANDLE REGISTRATION ================= */
   const handleRegister = async () => {
     if (!webinar) return;
     setRegistering(true);
 
     try {
+      // 1. Call your specific API route: /api/webinar-register/[id]
       const res = await fetch(`/api/webinars-register/${webinar._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
-      // 1. Not Logged In -> Redirect
+      // 2. Handle Auth Redirect (401)
       if (res.status === 401) {
-        const currentPath = encodeURIComponent(`/webinars/${webinar._id}`);
-        router.push(`/login?redirect=${currentPath}`);
-        return; // Stop here
-      }
-
-      const data = await res.json().catch(() => ({}));
-
-      // 2. Already Registered (Handle as Success)
-      if (res.status === 409 || data.error?.toLowerCase().includes("already registered")) {
-        setWebinar((prev) => prev ? { ...prev, isRegistered: true } : null);
-        alert("You are already registered for this event.");
-        setRegistering(false);
+        router.push(`/login?redirect=/webinars/${webinar._id}`);
         return;
       }
 
-      // 3. Generic Error
+      // 3. Handle Other Errors
       if (!res.ok) {
-        throw new Error(data.error || "Registration failed");
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Registration failed");
       }
 
-      // 4. Success -> Optimistic Update
+      // 4. Success: Update UI immediately
       setWebinar((prev) => 
         prev 
           ? { 
@@ -443,9 +435,6 @@ export default function WebinarDetailsPage() {
             } 
           : null
       );
-
-      // 5. Fetch fresh data (to reveal links if available)
-      await fetchWebinarData();
       
     } catch (err: any) {
       alert(err.message || "Something went wrong. Please try again.");
@@ -458,51 +447,36 @@ export default function WebinarDetailsPage() {
   const renderActionButton = () => {
     if (!webinar) return null;
 
-    // 1. PAST EVENT
-    if (webinar.isPast) {
-      if (webinar.recordedLink) {
-        return (
-          <a
-            href={webinar.recordedLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#1B3A5B] hover:bg-[#152e4a] text-white rounded-xl font-semibold transition-all shadow-md shadow-blue-900/10"
-          >
-            <PlayCircle size={20} /> Watch Recording
-          </a>
-        );
-      }
+    // 1. WATCH RECORDING (Highest Priority if Link Exists)
+    if (webinar.recordedLink) {
       return (
-        <div className="w-full py-3.5 bg-slate-100 text-slate-500 rounded-xl font-semibold text-center flex items-center justify-center gap-2">
-          <Clock size={18} /> Event Ended
-        </div>
+        <a
+          href={webinar.recordedLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#1B3A5B] hover:bg-[#152e4a] text-white rounded-xl font-semibold transition-all shadow-md shadow-blue-900/10"
+        >
+          <PlayCircle size={20} /> Watch Recording
+        </a>
       );
     }
 
-    // 2. REGISTERED USERS
+    // 2. JOIN LIVE (If Started & Link Exists)
+    if (webinar.webinarLink) {
+      return (
+        <a
+          href={webinar.webinarLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-red-600 hover:bg-red-700 text-white animate-pulse rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20"
+        >
+          <MonitorPlay size={20} /> Join Live Session
+        </a>
+      );
+    }
+
+    // 3. REGISTERED (Upcoming)
     if (webinar.isRegistered) {
-      // Event Live + Link Available
-      if (webinar.isStarted) {
-        if (webinar.webinarLink) {
-           return (
-            <a
-              href={webinar.webinarLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-red-600 hover:bg-red-700 text-white animate-pulse rounded-xl font-semibold transition-all shadow-lg shadow-red-600/20"
-            >
-              <MonitorPlay size={20} /> Join Live Session
-            </a>
-          );
-        }
-        return (
-          <div className="w-full py-3.5 bg-amber-50 text-amber-600 rounded-xl font-medium text-center border border-amber-100">
-             Session is live. Link appearing soon...
-          </div>
-        );
-      }
-      
-      // Event Not Started
       return (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
           <div className="flex items-center justify-center gap-2 text-green-700 font-bold mb-1">
@@ -513,7 +487,16 @@ export default function WebinarDetailsPage() {
       );
     }
 
-    // 3. UNREGISTERED (Default)
+    // 4. EVENT ENDED (No Links Available)
+    if (webinar.isPast) {
+       return (
+        <div className="w-full py-3.5 bg-slate-100 text-slate-500 rounded-xl font-semibold text-center flex items-center justify-center gap-2">
+          <Clock size={18} /> Event Ended
+        </div>
+      );
+    }
+
+    // 5. REGISTER (Default Action)
     return (
       <button
         onClick={handleRegister}
@@ -530,8 +513,8 @@ export default function WebinarDetailsPage() {
   };
 
   /* ================= UI RENDERING ================= */
-  if (loading) return <div className="min-h-screen bg-slate-50 animate-pulse"><div className="h-80 bg-slate-200" /></div>;
-  if (error || !webinar) return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>;
+  if (loading) return <SkeletonLoader />;
+  if (error || !webinar) return <ErrorState message={error} />;
 
   const eventDate = new Date(webinar.dateTime);
   const dateStr = eventDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
@@ -539,7 +522,8 @@ export default function WebinarDetailsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800">
-      
+      <Navbar />
+
       {/* HEADER */}
       <div className="bg-[#1B3A5B] text-white pt-24 pb-32 px-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#27B19B] opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -608,9 +592,7 @@ export default function WebinarDetailsPage() {
                 <div className="space-y-3">{renderActionButton()}</div>
 
                 <div className="mt-6 pt-6 border-t border-slate-100 space-y-4">
-                   <div className="flex items-start gap-3"><MapPin size={18} className="text-[#27B19B] shrink-0 mt-0.5" /><div><p className="text-sm font-semibold text-[#1B3A5B]">Online Event</p><p className="text-xs text-slate-500">
-                      {webinar.isRegistered ? "Link sent & accessible here" : "Link accessible after registration"}
-                   </p></div></div>
+                   <div className="flex items-start gap-3"><MapPin size={18} className="text-[#27B19B] shrink-0 mt-0.5" /><div><p className="text-sm font-semibold text-[#1B3A5B]">Online Event</p><p className="text-xs text-slate-500">Access link sent upon registration</p></div></div>
                    <div className="flex items-start gap-3"><Users size={18} className="text-[#27B19B] shrink-0 mt-0.5" /><div><p className="text-sm font-semibold text-[#1B3A5B]">Global Access</p><p className="text-xs text-slate-500">{webinar.registeredCount} people attending</p></div></div>
                 </div>
               </div>
@@ -632,3 +614,5 @@ function Badge({ children, variant }: { children: React.ReactNode, variant: stri
   const styles: any = { gray: "bg-slate-700/50 text-white backdrop-blur-sm", red: "bg-red-500 text-white animate-pulse", teal: "bg-[#27B19B] text-white", outline: "border border-white/30 text-white backdrop-blur-sm" };
   return <span className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${styles[variant]}`}>{children}</span>;
 }
+function SkeletonLoader() { return <div className="min-h-screen bg-slate-50 animate-pulse"><div className="h-80 bg-slate-200" /></div>; }
+function ErrorState({ message }: { message: string }) { return <div className="min-h-screen flex items-center justify-center text-red-500">{message}</div>; }

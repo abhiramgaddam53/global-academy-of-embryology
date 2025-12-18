@@ -1,946 +1,609 @@
-# Global Academy of Embryology (GAE) - Platform Documentation
 
-## 📋 Table of Contents
-1. [Project Overview](#project-overview)
-2. [Technology Stack](#technology-stack)
-3. [Database Models](#database-models)
-4. [API Endpoints](#api-endpoints)
-5. [Authentication Flow](#authentication-flow)
-6. [Environment Variables](#environment-variables)
-7. [External Integrations](#external-integrations)
-8. [Installation & Setup](#installation--setup)
+# 🧬 Global Academy of Embryology
 
----
+> A professional learning platform for embryology professionals worldwide
 
-## 🎯 Project Overview
-
-Global Academy of Embryology is a professional learning platform for embryology professionals featuring:
-- User registration and authentication
-- Webinar management (upcoming/past with external platform integration)
-- Faculty/Team management
-- User profile management
-- Admin dashboard
-- Certificate management (planned)
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat&logo=typescript)
+![MongoDB](https://img.shields.io/badge/MongoDB-7-green?style=flat&logo=mongodb)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?style=flat&logo=tailwindcss)
+![License](https://img.shields.io/badge/License-Proprietary-red?style=flat)
 
 ---
 
-## 🛠 Technology Stack
+## 📖 Table of Contents
+
+- [About](#about)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Environment Setup](#environment-setup)
+- [Project Structure](#project-structure)
+- [API Documentation](#api-documentation)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## 🎯 About
+
+**Global Academy of Embryology** is a cutting-edge platform designed to connect embryology professionals with world-class educational resources, webinars, and networking opportunities. Built with modern web technologies, it provides a seamless experience for learning and professional development.
+
+### Key Objectives
+
+- 🎓 **Education**: Provide access to expert-led webinars and educational content
+- 🌐 **Global Reach**: Connect professionals worldwide
+- 📜 **Certification**: Track and certify professional development
+- 👥 **Community**: Foster networking and knowledge sharing
+
+---
+
+## ✨ Features
+
+### For Users
+
+- ✅ **Dual Authentication**: Login with email OR mobile number
+- 👤 **Profile Management**: Complete professional profile with image upload
+- 📅 **Webinar Registration**: Register for upcoming webinars with countdown timers
+- 🎥 **Live Sessions**: Join live webinars via external platforms (Zoom, Google Meet)
+- 📺 **Recorded Content**: Access past webinar recordings
+- 🔐 **Secure Authentication**: JWT-based auth with HTTP-only cookies
+- 📱 **Responsive Design**: Works seamlessly on all devices
+
+### For Admins
+
+- 🎛️ **Content Management**: Create, update, and delete webinars
+- 📸 **Media Upload**: Upload images to AWS S3
+- 👥 **Faculty Management**: Add and manage faculty profiles
+- 📊 **User Management**: View and manage registered users
+- 🔒 **Role-Based Access**: Secure admin-only routes
+
+### Coming Soon
+
+- 📜 **Certificate Generation**: Auto-generate completion certificates
+- 💳 **Payment Integration**: Paid webinars and subscriptions
+- 📧 **Email Notifications**: Automated reminders and confirmations
+- 📈 **Analytics Dashboard**: Track engagement and performance
+
+---
+
+## 🛠 Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Animations**: GSAP
-- **Icons**: Lucide React
-- **Image Handling**: Next/Image
+
+```
+Next.js 14       - React framework with App Router
+TypeScript       - Type-safe JavaScript
+Tailwind CSS     - Utility-first CSS framework
+GSAP             - Professional-grade animations
+Lucide React     - Beautiful icon library
+```
 
 ### Backend
-- **Runtime**: Node.js
-- **API**: Next.js API Routes
-- **Database**: MongoDB (Atlas)
-- **ODM**: Mongoose
-- **Authentication**: JWT (jsonwebtoken)
-- **Password Hashing**: bcryptjs
-- **Email**: Nodemailer (SMTP)
+
+```
+Next.js API      - RESTful API routes
+MongoDB Atlas    - Cloud NoSQL database
+Mongoose         - Elegant MongoDB ODM
+```
+
+### Authentication & Security
+
+```
+bcryptjs         - Password hashing (12 rounds)
+jsonwebtoken     - JWT token generation
+cookie           - HTTP-only cookie management
+```
 
 ### External Services
-- **File Storage**: AWS S3
-- **Email**: Gmail SMTP
-- **Webinar Hosting**: External platforms (Zoom, Google Meet, etc.)
 
----
-
-## 📊 Database Models
-
-### 1. User Model
-**File**: `/app/models/User.ts`
-
-```typescript
-interface IUser {
-  // Personal Information
-  name: string;              // Required
-  email: string;             // Required, Unique, Lowercase
-  mobile: string;            // Required, Unique
-  dob: Date;                 // Date of Birth
-  
-  // Authentication
-  password: string;          // Hashed password
-  role: "user" | "admin";    // Default: "user"
-  
-  // Professional Information
-  qualification: string;
-  designation: string;
-  clinicName: string;
-  address: string;
-  workExp: number;          // Years of experience
-  
-  // Password Reset
-  resetToken?: string;
-  resetExpiresAt?: Date;
-  
-  // Metadata
-  createdAt: Date;
-  updatedAt: Date;
-}
 ```
-
-**Validations**:
-- Email: Must be valid email format, unique
-- Mobile: 10 digits starting with 6-9 (Indian format), unique
-- Password: Minimum 8 characters, must contain letters and numbers
-- All personal and professional fields are required during registration
-
-**Methods**:
-- `comparePassword(password: string): Promise<boolean>` - Compare plain text with hashed password
-- Pre-save hook: Automatically hashes password before saving
-
----
-
-### 2. Webinar Model
-**File**: `/app/models/Webinar.ts`
-
-```typescript
-interface IWebinar {
-  // Basic Information
-  title: string;              // Required
-  description: string;        // Required
-  dateTime: Date;            // Required
-  duration?: string;         // Default: "1 hour"
-  
-  // Speakers
-  mentors: string[];         // Array of speaker names
-  
-  // Media
-  imageUrl?: string;         // Poster/thumbnail image
-  
-  // External Links
-  webinarLink?: string;      // Live webinar platform URL
-  recordedLink?: string;     // Recording URL (for past webinars)
-  registrationLink?: string; // External registration platform
-  
-  // Status
-  isStarted: boolean;        // Default: false
-  isPast: boolean;           // Default: false
-  
-  // Registration Tracking
-  registeredUsers: ObjectId[]; // Array of User IDs
-  registeredCount: number;     // Auto-calculated
-  
-  // Metadata
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-**Hooks**:
-- Pre-save: Auto-calculates `registeredCount` from `registeredUsers.length`
-
----
-
-### 3. Faculty Model
-**File**: `/app/models/Faculty.ts` (Planned)
-
-```typescript
-interface IFaculty {
-  // Basic Information
-  name: string;              // Required
-  email: string;             // Required, Unique
-  designation: string;       // Required
-  specialization: string;    // Required
-  
-  // Professional Details
-  experience: string;        // e.g., "10+ Years"
-  education: string;         // Qualifications
-  bio: string;              // Biography
-  
-  // Media
-  image: string;            // Profile picture URL
-  
-  // Achievements
-  achievements: string[];   // Array of achievements
-  
-  // Metadata
-  createdAt: Date;
-  updatedAt: Date;
-}
+AWS S3           - File storage
+Gmail SMTP       - Email delivery
+Zoom/Meet        - Webinar hosting
 ```
 
 ---
 
-## 🔌 API Endpoints
+## 🚀 Getting Started
 
-### Authentication APIs
+### Prerequisites
 
-#### 1. Register User
-**Endpoint**: `POST /api/auth/register`
+Before you begin, ensure you have:
 
-**Request Body**:
-```json
-{
-  "name": "Dr. John Doe",
-  "email": "john@example.com",
-  "mobile": "9876543210",
-  "password": "SecurePass123",
-  "dob": "1990-05-15",
-  "qualification": "PhD in Embryology",
-  "designation": "Senior Embryologist",
-  "clinicName": "ABC IVF Center",
-  "address": "123 Medical Street, City",
-  "workExp": "10"
-}
-```
+- **Node.js** 18+ installed ([Download](https://nodejs.org/))
+- **npm** or **yarn** package manager
+- **MongoDB Atlas** account ([Sign up](https://www.mongodb.com/cloud/atlas))
+- **AWS Account** for S3 (optional, for image uploads)
+- **Gmail Account** for SMTP (optional, for emails)
 
-**Success Response** (201):
-```json
-{
-  "user": {
-    "_id": "64f8a...",
-    "name": "Dr. John Doe",
-    "email": "john@example.com",
-    "mobile": "9876543210",
-    "dob": "1990-05-15T00:00:00.000Z",
-    "qualification": "PhD in Embryology",
-    "designation": "Senior Embryologist",
-    "clinicName": "ABC IVF Center",
-    "address": "123 Medical Street, City",
-    "workExp": 10
-  }
-}
-```
+### Installation
 
-**Error Responses**:
-- `400`: Missing required fields
-- `400`: Invalid email format
-- `400`: Invalid mobile number
-- `400`: Weak password
-- `409`: Email already exists
-- `409`: Mobile already exists
-- `500`: Server error
-
----
-
-#### 2. Login User
-**Endpoint**: `POST /api/auth/login`
-
-**Request Body**:
-```json
-{
-  "identifier": "john@example.com",  // Email OR Mobile
-  "password": "SecurePass123"
-}
-```
-
-**Success Response** (200):
-```json
-{
-  "ok": true,
-  "user": {
-    "_id": "64f8a...",
-    "name": "Dr. John Doe",
-    "email": "john@example.com",
-    "mobile": "9876543210",
-    "role": "user"
-  }
-}
-```
-
-**Headers Set**:
-- `Set-Cookie`: JWT token in HTTP-only cookie
-
-**Error Responses**:
-- `400`: Missing identifier or password
-- `400`: Invalid email/mobile format
-- `401`: Invalid credentials
-- `500`: Server error
-
----
-
-#### 3. Get Current User
-**Endpoint**: `GET /api/auth/me`
-
-**Headers Required**:
-- `Cookie`: Must contain valid JWT token
-
-**Success Response** (200):
-```json
-{
-  "user": {
-    "_id": "64f8a...",
-    "name": "Dr. John Doe",
-    "email": "john@example.com",
-    "mobile": "9876543210",
-    "role": "user",
-    "dob": "1990-05-15T00:00:00.000Z",
-    "qualification": "PhD in Embryology",
-    "designation": "Senior Embryologist",
-    "clinicName": "ABC IVF Center",
-    "address": "123 Medical Street, City",
-    "workExp": 10,
-    "createdAt": "2024-01-01T00:00:00.000Z"
-  }
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `500`: Server error
-
----
-
-#### 4. Update Profile
-**Endpoint**: `PUT /api/auth/update-profile`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token
-
-**Request Body**:
-```json
-{
-  "name": "Dr. John Doe",
-  "dob": "1990-05-15",
-  "mobile": "9876543210",
-  "qualification": "PhD in Embryology",
-  "designation": "Senior Embryologist",
-  "clinicName": "ABC IVF Center",
-  "address": "123 Medical Street, City",
-  "workExp": "10"
-}
-```
-
-**Success Response** (200):
-```json
-{
-  "user": {
-    // Updated user object
-  }
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `400`: Validation errors
-- `500`: Server error
-
----
-
-#### 5. Forgot Password
-**Endpoint**: `POST /api/auth/forgot`
-
-**Request Body**:
-```json
-{
-  "email": "john@example.com"
-}
-```
-
-**Success Response** (200):
-```json
-{
-  "ok": true,
-  "message": "If the email exists, a reset link has been sent",
-  "tokenSent": true
-}
-```
-
-**Process**:
-1. Generates random reset token (48 character hex)
-2. Sets expiry time (60 minutes by default)
-3. Saves token to user document
-4. Sends email with reset link (to be implemented)
-
-**Error Responses**:
-- `400`: Invalid email format
-- `500`: Server error
-
----
-
-#### 6. Reset Password
-**Endpoint**: `POST /api/auth/reset`
-
-**Request Body**:
-```json
-{
-  "email": "john@example.com",
-  "token": "a1b2c3d4e5f6...",
-  "newPassword": "NewSecurePass123"
-}
-```
-
-**Success Response** (200):
-```json
-{
-  "success": true,
-  "message": "Password has been reset successfully"
-}
-```
-
-**Error Responses**:
-- `400`: Validation errors
-- `400`: Invalid or expired token
-- `500`: Server error
-
----
-
-### Webinar APIs
-
-#### 7. Get All Webinars
-**Endpoint**: `GET /api/webinars`
-
-**Success Response** (200):
-```json
-{
-  "webinars": [
-    {
-      "_id": "64f8a...",
-      "title": "Advanced IVF Techniques",
-      "description": "Learn about the latest...",
-      "dateTime": "2024-06-15T14:00:00.000Z",
-      "duration": "2 hours",
-      "mentors": ["Dr. Jane Smith", "Dr. Robert Lee"],
-      "imageUrl": "https://...",
-      "webinarLink": "https://zoom.us/...",
-      "recordedLink": "",
-      "registrationLink": "https://eventbrite.com/...",
-      "isStarted": false,
-      "isPast": false,
-      "registeredCount": 45,
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  ]
-}
-```
-
----
-
-#### 8. Get Upcoming Webinars
-**Endpoint**: `GET /api/webinars/upcoming`
-
-**Success Response** (200):
-```json
-{
-  "webinars": [
-    // Array of upcoming webinar objects
-    // Sorted by dateTime ascending
-  ]
-}
-```
-
-**Filters**:
-- `dateTime >= current date`
-- `isPast = false`
-
----
-
-#### 9. Get Past Webinars
-**Endpoint**: `GET /api/webinars/past`
-
-**Success Response** (200):
-```json
-{
-  "webinars": [
-    // Array of past webinar objects
-    // Sorted by dateTime descending
-  ]
-}
-```
-
-**Filters**:
-- `isPast = true`
-
----
-
-#### 10. Get Single Webinar
-**Endpoint**: `GET /api/webinars/[id]`
-
-**Success Response** (200):
-```json
-{
-  "webinar": {
-    "_id": "64f8a...",
-    "title": "Advanced IVF Techniques",
-    // ... all webinar fields
-    "isRegistered": true  // If user is logged in and registered
-  }
-}
-```
-
-**Error Responses**:
-- `404`: Webinar not found
-- `500`: Server error
-
----
-
-#### 11. Create Webinar (Admin Only)
-**Endpoint**: `POST /api/webinars`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token (admin role)
-
-**Request Body**:
-```json
-{
-  "title": "Advanced IVF Techniques",
-  "description": "Comprehensive workshop on...",
-  "dateTime": "2024-06-15T14:00:00.000Z",
-  "duration": "2 hours",
-  "mentors": ["Dr. Jane Smith", "Dr. Robert Lee"],
-  "imageUrl": "https://s3.amazonaws.com/...",
-  "webinarLink": "https://zoom.us/j/123456",
-  "registrationLink": "https://eventbrite.com/e/123"
-}
-```
-
-**Success Response** (201):
-```json
-{
-  "webinar": {
-    // Created webinar object
-  }
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `403`: Admin access required
-- `400`: Missing required fields
-- `500`: Server error
-
----
-
-#### 12. Update Webinar (Admin Only)
-**Endpoint**: `PUT /api/webinars/[id]`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token (admin role)
-
-**Request Body**: Same as Create Webinar
-
-**Success Response** (200):
-```json
-{
-  "webinar": {
-    // Updated webinar object
-  }
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `403`: Admin access required
-- `404`: Webinar not found
-- `500`: Server error
-
----
-
-#### 13. Delete Webinar (Admin Only)
-**Endpoint**: `DELETE /api/webinars/[id]`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token (admin role)
-
-**Success Response** (200):
-```json
-{
-  "message": "Webinar deleted successfully"
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `403`: Admin access required
-- `404`: Webinar not found
-- `500`: Server error
-
----
-
-#### 14. Register for Webinar
-**Endpoint**: `POST /api/webinars-register/[id]`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token
-
-**Success Response** (200):
-```json
-{
-  "success": true,
-  "message": "Successfully registered for webinar"
-}
-```
-
-**Process**:
-1. Verifies user authentication
-2. Checks if already registered
-3. Validates webinar is not past
-4. Adds user ID to `registeredUsers` array
-5. Auto-increments `registeredCount`
-
-**Error Responses**:
-- `401`: Not authenticated
-- `400`: Already registered
-- `400`: Cannot register for past webinars
-- `404`: Webinar not found
-- `500`: Server error
-
----
-
-### Faculty APIs
-
-#### 15. Get All Faculty
-**Endpoint**: `GET /api/faculty`
-
-**Success Response** (200):
-```json
-{
-  "message": "Fetch doctors from DB here"
-}
-```
-*(Placeholder - Implementation pending)*
-
----
-
-#### 16. Create Faculty (Admin Only)
-**Endpoint**: `POST /api/faculty`
-
-**Request Body**:
-```json
-{
-  "name": "Dr. Jane Smith",
-  "email": "jane@example.com",
-  "designation": "Senior Embryologist",
-  "specialization": "IVF, Andrology",
-  "experience": "15+ Years",
-  "education": "PhD, MSc",
-  "bio": "Dr. Jane has extensive experience...",
-  "image": "/placeholder.jpg",
-  "achievements": [
-    "Best Embryologist Award 2023",
-    "Published 50+ research papers"
-  ]
-}
-```
-
-**Success Response** (201):
-```json
-{
-  "message": "Admin will add doctor here"
-}
-```
-*(Placeholder - Implementation pending)*
-
----
-
-### File Upload API
-
-#### 17. Upload Image (Admin Only)
-**Endpoint**: `POST /api/upload`
-
-**Headers Required**:
-- `Cookie`: Valid JWT token (admin role)
-- `Content-Type`: multipart/form-data
-
-**Request Body** (FormData):
-```javascript
-const formData = new FormData();
-formData.append('file', imageFile);
-```
-
-**File Validations**:
-- **Allowed types**: JPEG, PNG, WebP
-- **Max size**: 5MB
-- **Uploaded to**: AWS S3 bucket
-
-**Success Response** (200):
-```json
-{
-  "url": "https://gae-photos-storage.s3.us-east-2.amazonaws.com/Webinar-photos/abc123.jpg"
-}
-```
-
-**Error Responses**:
-- `401`: Not authenticated
-- `403`: Admin access required
-- `400`: No file provided
-- `400`: Invalid file type
-- `400`: File too large
-- `500`: Upload failed
-
----
-
-## 🔐 Authentication Flow
-
-### User Registration Flow
-```
-1. User submits registration form
-2. API validates all required fields
-3. API checks email and mobile uniqueness
-4. Password is hashed using bcryptjs
-5. User document created in MongoDB
-6. Success response sent (no auto-login)
-```
-
-### Login Flow
-```
-1. User submits email/mobile + password
-2. API finds user by email OR mobile
-3. Password verified using bcrypt.compare()
-4. JWT token generated with user data
-5. Token set in HTTP-only cookie
-6. User data returned in response
-```
-
-### Protected Routes
-```
-1. Frontend makes request to protected API
-2. API extracts JWT from cookie
-3. JWT verified using secret key
-4. User ID extracted from token
-5. User fetched from database
-6. Request processed if valid
-```
-
----
-
-## 🌍 Environment Variables
-
-### Required Variables
+1. **Clone the repository**
 
 ```bash
-# Database
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/GAE?retryWrites=true&w=majority
+git clone <repository-url>
+cd global-academy-of-embryology
+```
 
-# Authentication
-JWT_SECRET=your-super-secret-jwt-key
-JWT_EXPIRES_IN=60m
+2. **Install dependencies**
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. **Set up environment variables**
+
+Create a `.env.local` file in the root directory:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your credentials (see [Environment Setup](#environment-setup))
+
+4. **Run the development server**
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+5. **Open your browser**
+
+Navigate to [http://localhost:3000](http://localhost:3000)
+
+🎉 **You're all set!**
+
+---
+
+## 🔐 Environment Setup
+
+### Required Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```bash
+# ==========================================
+# Database Configuration
+# ==========================================
+MONGODB_URI=mongodb+srv:*************************
+
+# ==========================================
+# JWT Authentication
+# ==========================================
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+JWT_EXPIRES_IN=2h
 COOKIE_NAME=token
-COOKIE_MAX_AGE=3600
+COOKIE_MAX_AGE=7200
 BCRYPT_SALT_ROUNDS=12
 
+# ==========================================
 # Password Reset
+# ==========================================
 RESET_TOKEN_EXPIRY_MIN=60
 
-# Email (SMTP)
+# ==========================================
+# Email Configuration (Gmail SMTP)
+# ==========================================
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+SMTP_PASS=your-gmail-app-password
 
-# AWS S3
-AWS_ACCESS=AKIAXXXXXXXXXXXXXXXX
-AWS_SECRET=your-aws-secret-key
+# ==========================================
+# AWS S3 Configuration (Optional)
+# ==========================================
+AWS_ACCESS=your-aws-access-key-id
+AWS_SECRET=your-aws-secret-access-key
 AWS_REGION=us-east-2
-AWS_BUCKET=gae-photos-storage
+AWS_BUCKET=your-bucket-name
 
-# App Config
+# ==========================================
+# Application Configuration
+# ==========================================
 FRONTEND_URL=http://localhost:3000
 NODE_ENV=development
 ```
 
+### How to Get Credentials
+
+#### MongoDB Atlas
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free cluster
+3. Click "Connect" → "Connect your application"
+4. Copy the connection string
+5. Replace `<password>` with your database password
+
+#### Gmail App Password
+1. Go to [Google Account Security](https://myaccount.google.com/security)
+2. Enable 2-Step Verification
+3. Go to "App passwords"
+4. Generate a new app password for "Mail"
+5. Copy the 16-character password
+
+#### AWS S3 (Optional)
+1. Go to [AWS Console](https://aws.amazon.com/console/)
+2. Create an S3 bucket
+3. Go to IAM → Create user with S3 permissions
+4. Generate access keys
+5. Copy Access Key ID and Secret Access Key
+
 ---
 
-## 🔗 External Integrations
+## 📂 Project Structure
 
-### 1. AWS S3 (File Storage)
-**Purpose**: Store webinar images and faculty photos
-
-**Configuration**:
-- **Region**: us-east-2
-- **Bucket**: gae-photos-storage
-- **Folder**: Webinar-photos/
-
-**Upload Process**:
-```typescript
-1. File received via multipart/form-data
-2. File validated (type, size)
-3. Converted to Buffer
-4. Uploaded to S3 using PutObjectCommand
-5. Public URL returned
+```
+global-academy-of-embryology/
+│
+├── app/                          # Next.js App Router
+│   ├── api/                      # Backend API Routes
+│   │   ├── auth/                 # Authentication endpoints
+│   │   │   ├── register/         # POST /api/auth/register
+│   │   │   ├── login/            # POST /api/auth/login
+│   │   │   ├── me/               # GET /api/auth/me
+│   │   │   ├── update-profile/   # PUT /api/auth/update-profile
+│   │   │   ├── change-password/  # POST /api/auth/change-password
+│   │   │   ├── forgot/           # POST /api/auth/forgot
+│   │   │   └── reset/            # POST /api/auth/reset
+│   │   ├── webinars/             # Webinar management
+│   │   │   ├── route.ts          # GET/POST /api/webinars
+│   │   │   ├── upcoming/         # GET /api/webinars/upcoming
+│   │   │   ├── past/             # GET /api/webinars/past
+│   │   │   └── [id]/             # GET/PUT/DELETE /api/webinars/:id
+│   │   ├── webinar-register/     # Webinar registration
+│   │   │   └── [id]/             # POST /api/webinar-register/:id
+│   │   ├── faculty/              # Faculty management
+│   │   │   └── route.ts          # GET/POST /api/faculty
+│   │   └── upload/               # File upload
+│   │       └── route.ts          # POST /api/upload
+│   │
+│   ├── models/                   # MongoDB Models
+│   │   ├── User.ts               # User schema
+│   │   ├── Webinar.ts            # Webinar schema
+│   │   └── Faculty.ts            # Faculty schema
+│   │
+│   ├── components/               # Reusable Components
+│   │   ├── Navbar.tsx
+│   │   └── AnimatedLogoLoader.tsx
+│   │
+│   ├── webinars/                 # Webinar Pages
+│   │   ├── page.tsx              # Webinars listing
+│   │   └── [id]/page.tsx         # Webinar details
+│   │
+│   ├── admin/                    # Admin Pages
+│   │   └── faculty/
+│   │       └── new/page.tsx
+│   │
+│   ├── profile/page.tsx          # User profile
+│   ├── login/page.tsx            # Login page
+│   ├── register/page.tsx         # Registration
+│   └── page.tsx                  # Homepage
+│
+├── lib/                          # Utility Functions
+│   ├── mongodb.ts                # DB connection
+│   ├── auth.ts                   # JWT helpers
+│   ├── s3.ts                     # AWS S3 upload
+│   └── validation.ts             # Validators
+│
+├── public/                       # Static Assets
+├── .env.local                    # Environment variables
+├── .gitignore                    # Git ignore
+├── next.config.js                # Next.js config
+├── tailwind.config.ts            # Tailwind config
+├── tsconfig.json                 # TypeScript config
+├── package.json                  # Dependencies
+├── README.md                     # This file
+└── Documentation.md              # Detailed docs
 ```
 
 ---
 
-### 2. Gmail SMTP (Email)
-**Purpose**: Password reset emails, notifications
+## 📡 API Documentation
 
-**Configuration**:
-- **Host**: smtp.gmail.com
-- **Port**: 587
-- **Secure**: STARTTLS
+### Quick Reference
 
-**Email Types**:
-- Password reset emails
-- Registration confirmation (planned)
-- Webinar reminders (planned)
+| Method | Endpoint | Purpose | Auth |
+|--------|----------|---------|------|
+| POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/login` | Login user | No |
+| GET | `/api/auth/me` | Get current user | Yes |
+| PUT | `/api/auth/update-profile` | Update profile | Yes |
+| POST | `/api/auth/change-password` | Change password | Yes |
+| POST | `/api/auth/forgot` | Request reset | No |
+| POST | `/api/auth/reset` | Reset password | No |
+| GET | `/api/webinars` | Get all webinars | No |
+| GET | `/api/webinars/upcoming` | Get upcoming | No |
+| GET | `/api/webinars/past` | Get past | No |
+| GET | `/api/webinars/:id` | Get single | No |
+| POST | `/api/webinars` | Create webinar | Admin |
+| PUT | `/api/webinars/:id` | Update webinar | Admin |
+| DELETE | `/api/webinars/:id` | Delete webinar | Admin |
+| POST | `/api/webinar-register/:id` | Register | Yes |
+| GET | `/api/faculty` | Get faculty | No |
+| POST | `/api/faculty` | Add faculty | Admin |
+| POST | `/api/upload` | Upload image | Admin |
 
----
+### Example: Register User
 
-### 3. External Webinar Platforms
-**Supported**: Zoom, Google Meet, Microsoft Teams, Custom links
-
-**Integration Points**:
-- `webinarLink`: Live session URL
-- `recordedLink`: Recording URL
-- `registrationLink`: External registration page
-
-**User Flow**:
-```
-1. User views webinar on GAE platform
-2. User clicks "Register Now" → External registration
-3. User clicks "Join Live" → External platform
-4. User clicks "Watch Recording" → External video
-```
-
----
-
-## 📦 Installation & Setup
-
-### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account
-- AWS S3 bucket
-- Gmail account (for SMTP)
-
-### Installation Steps
-
+**Request**:
 ```bash
-# 1. Clone repository
-git clone <repository-url>
-cd global-academy-of-embryology
-
-# 2. Install dependencies
-npm install
-
-# 3. Create environment file
-cp .env.example .env.local
-
-# 4. Configure environment variables
-# Edit .env.local with your credentials
-
-# 5. Run development server
-npm run dev
-
-# 6. Build for production
-npm run build
-
-# 7. Start production server
-npm start
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Dr. John Doe",
+    "email": "john@example.com",
+    "mobile": "9876543210",
+    "password": "SecurePass123",
+    "dob": "1990-05-15",
+    "qualification": "PhD",
+    "designation": "Senior Embryologist",
+    "clinicName": "ABC IVF Center",
+    "address": "123 Medical St",
+    "workExp": "10"
+  }'
 ```
 
-### Required npm Packages
-
+**Response**:
 ```json
 {
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "mongoose": "^8.0.0",
-    "jsonwebtoken": "^9.0.0",
-    "bcryptjs": "^2.4.3",
-    "cookie": "^0.6.0",
-    "nodemailer": "^6.9.0",
-    "@aws-sdk/client-s3": "^3.0.0",
-    "gsap": "^3.12.0",
-    "lucide-react": "^0.300.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.0.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/cookie": "^0.6.0",
-    "tailwindcss": "^3.4.0"
+  "user": {
+    "_id": "64f8a...",
+    "name": "Dr. John Doe",
+    "email": "john@example.com",
+    "mobile": "9876543210"
   }
 }
 ```
 
----
-
-## 🗂 Project Structure
-
-```
-global-academy-of-embryology/
-├── app/
-│   ├── api/                    # API Routes
-│   │   ├── auth/
-│   │   │   ├── login/route.ts
-│   │   │   ├── register/route.ts
-│   │   │   ├── me/route.ts
-│   │   │   ├── forgot/route.ts
-│   │   │   ├── reset/route.ts
-│   │   │   └── update-profile/route.ts
-│   │   ├── webinars/
-│   │   │   ├── route.ts
-│   │   │   ├── upcoming/route.ts
-│   │   │   ├── past/route.ts
-│   │   │   └── [id]/route.ts
-│   │   ├── webinars-register/
-│   │   │   └── [id]/route.ts
-│   │   ├── faculty/route.ts
-│   │   └── upload/route.ts
-│   ├── models/                 # Mongoose Models
-│   │   ├── User.ts
-│   │   ├── Webinar.ts
-│   │   └── Faculty.ts
-│   ├── components/             # React Components
-│   │   ├── Navbar.tsx
-│   │   └── AnimatedLogoLoader.tsx
-│   ├── profile/page.tsx        # User Profile
-│   ├── webinars/               # Webinar Pages
-│   │   ├── page.tsx
-│   │   └── [id]/page.tsx
-│   ├── admin/                  # Admin Dashboard
-│   │   └── faculty/
-│   │       └── new/page.tsx
-│   └── login/page.tsx          # Auth Pages
-├── lib/                        # Utilities
-│   ├── mongodb.ts              # DB Connection
-│   ├── auth.ts                 # Auth Helpers
-│   ├── s3.ts                   # S3 Upload
-│   └── validation.ts           # Input Validation
-├── .env.local                  # Environment Variables
-├── next.config.js              # Next.js Config
-├── tailwind.config.ts          # Tailwind Config
-└── package.json                # Dependencies
-```
+For detailed API documentation, see [Documentation.md](./Documentation.md)
 
 ---
 
-## 🚀 Key Features
+## 🌐 Deployment
 
-### ✅ Implemented
-- User registration with comprehensive validation
-- Login with email OR mobile number
-- JWT-based authentication with HTTP-only cookies
-- Profile management
-- Webinar listing (upcoming/past)
-- Webinar details with countdown timer
-- External platform integration for webinars
-- Image upload to AWS S3
-- Password reset flow
-- Admin role checking
+### Deploy to Vercel (Recommended)
 
-### 🔄 In Progress
-- Faculty management CRUD
-- Email notifications
-- Certificate generation
+1. **Push your code to GitHub**
 
-### 📋 Planned
-- Payment gateway integration
-- Course management
-- Live chat support
-- Mobile app
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <your-github-repo>
+git push -u origin main
+```
+
+2. **Deploy to Vercel**
+
+- Go to [vercel.com](https://vercel.com)
+- Click "New Project"
+- Import your GitHub repository
+- Add environment variables from `.env.local`
+- Click "Deploy"
+
+3. **Configure Custom Domain** (Optional)
+
+- Go to Project Settings → Domains
+- Add your custom domain
+- Update DNS records as instructed
+
+### Deploy to Other Platforms
+
+#### Netlify
+```bash
+npm run build
+# Deploy the .next folder
+```
+
+#### AWS / DigitalOcean
+```bash
+# Build the app
+npm run build
+
+# Start production server
+npm start
+```
+
+#### Docker
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+---
+
+## 🧪 Testing
+
+### Run Tests
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Coverage
+npm run test:coverage
+```
+
+### Manual Testing Checklist
+
+- [ ] User registration (email + mobile)
+- [ ] Login with email
+- [ ] Login with mobile
+- [ ] Profile update
+- [ ] Password change
+- [ ] Forgot password flow
+- [ ] Webinar registration
+- [ ] View countdown timer
+- [ ] Join live webinar
+- [ ] Watch past recording
+- [ ] Admin: Create webinar
+- [ ] Admin: Upload image
+- [ ] Admin: Add faculty
+
+---
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Format code
+npm run format
+```
+
+### Code Style
+
+This project follows:
+
+- **ESLint** for code quality
+- **Prettier** for formatting
+- **TypeScript** for type safety
+- **Conventional Commits** for commit messages
+
+### Git Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/your-feature
+
+# Make changes and commit
+git add .
+git commit -m "feat: add new feature"
+
+# Push to remote
+git push origin feature/your-feature
+
+# Create pull request on GitHub
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your changes** (`git commit -m 'feat: Add AmazingFeature'`)
+4. **Push to the branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+### Contribution Guidelines
+
+- Follow the existing code style
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
+
+---
+
+## 📝 License
+
+**Proprietary License** - All Rights Reserved
+
+© 2024 Global Academy of Embryology. This software and associated documentation files are proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
 
 ---
 
 ## 📞 Support
 
-For issues or questions:
-- **Email**: support@gae.com
-- **Documentation**: This README
-- **Database**: MongoDB Atlas Dashboard
+### Get Help
+
+- 📧 **Email**: abhiramgaddam53@gmail.com
+- 📚 **Documentation**: [Documentation.md](./Documentation.md)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-repo/issues)
+
+### Frequently Asked Questions
+
+**Q: How do I reset my password?**  
+A: Click "Forgot Password" on the login page and follow the instructions.
+
+**Q: Can I login with my mobile number?**  
+A: Yes! You can use either your email or mobile number to login.
+
+**Q: How do I join a live webinar?**  
+A: Register for the webinar first. When it goes live, a "Join Live" button will appear on the webinar details page.
+
+**Q: Where are my certificates stored?**  
+A: Certificate functionality is coming soon. You'll be able to view and download them from your profile.
 
 ---
 
-**Last Updated**: January 2024
-**Version**: 1.0.0
+## 🗺️ Roadmap
+
+### Version 1.1 (Q2 2024)
+- [ ] Email notifications
+- [ ] Certificate generation
+- [ ] Payment gateway integration
+- [ ] Advanced search filters
+
+### Version 2.0 (Q3 2024)
+- [ ] Mobile app (React Native)
+- [ ] Live chat support
+- [ ] Discussion forums
+- [ ] Analytics dashboard
+
+### Version 3.0 (Q4 2024)
+- [ ] AI-powered recommendations
+- [ ] Multi-language support
+- [ ] Offline mode
+- [ ] Advanced reporting
+
+---
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - The React framework
+- [MongoDB](https://www.mongodb.com/) - Database
+- [Vercel](https://vercel.com/) - Hosting platform
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [GSAP](https://greensock.com/gsap/) - Animation library
+
+---
+
+## 📊 Project Stats
+
+![GitHub last commit](https://img.shields.io/github/last-commit/your-repo/gae)
+![GitHub issues](https://img.shields.io/github/issues/your-repo/gae)
+![GitHub stars](https://img.shields.io/github/stars/your-repo/gae)
+![GitHub forks](https://img.shields.io/github/forks/your-repo/gae)
+
+---
+
+<div align="center">
+
+**Built with ❤️ by the GAE Development Team**
+
+[Website](https://gae.com) • [Documentation](./Documentation.md) • [Support](mailto:abhiramgaddam53@gmail.com)
+
+</div>

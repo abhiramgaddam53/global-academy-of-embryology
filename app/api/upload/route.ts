@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
 
     // 3. Validation
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
@@ -43,7 +43,8 @@ export async function POST(req: Request) {
     // 4. Processing
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const fileType = file.type.split("/")[1];
+    // const fileType = file.type.split("/")[1];
+    const fileType = file.type === "application/pdf" ? "pdf" : file.type.split("/")[1];
 
     // 5. Upload with Dynamic Folder
     const url = await uploadToS3(buffer, fileType, folder);

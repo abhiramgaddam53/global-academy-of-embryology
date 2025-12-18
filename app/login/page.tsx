@@ -132,7 +132,7 @@ export default function LoginPage() {
         router.push(next || "/admin/");
         return;
       }
-      router.push(next || "/");
+      router.push(next || "/dashboard");
     } catch (err) {
       console.error(err);
       setServerError("Network error. Please check your connection.");

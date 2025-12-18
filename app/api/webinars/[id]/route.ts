@@ -326,7 +326,7 @@ export async function PUT(
 
     // 🔒 Prevent accidental registration overwrite
     const { registrations, ...safeData } = data;
-
+    console.log(safeData);
     const updated = await Webinar.findByIdAndUpdate(id, safeData, {
       new: true,
       runValidators: true,
@@ -338,7 +338,7 @@ export async function PUT(
         { status: 404 }
       );
     }
-
+    console.log(updated);
     return NextResponse.json(updated);
   } catch (err) {
     console.error("UPDATE WEBINAR ERROR:", err);

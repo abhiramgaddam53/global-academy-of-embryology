@@ -66,6 +66,7 @@ certificates/
 tmp/
 temp/
 api-tester.html
+Documentation.md
 # ===============================
 # Vercel
 # ===============================

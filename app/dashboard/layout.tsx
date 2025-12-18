@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           
           {/* Logo / Brand */}
           <div className="font-serif text-xl font-bold text-[#0F172A]">
-            Student<span className="text-[#27B19B]">Portal</span>
+            User<span className="text-[#27B19B]">Portal</span>
           </div>
 
           {/* THE NAV COMPONENT */}

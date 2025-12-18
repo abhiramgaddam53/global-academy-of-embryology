@@ -3,41 +3,40 @@ import { Schema, model, models } from "mongoose";
 const WebinarSchema = new Schema(
   {
     title: { type: String, required: true },
-
     description: { type: String, default: "" },
-
     imageUrl: { type: String, default: "" },
-
-    /**
-     * Live webinar link
-     * - Visible only during live session
-     * - Only for registered users (controlled in API)
-     */
-    webinarLink: {
-      type: String,
-      default: "",
-    },
-
-    /**
-     * Recording link
-     * - EMPTY when webinar is created
-     * - Updated by admin after session
-     * - Publicly visible once available
-     */
-    recordedLink: {
-      type: String,
-      default: "",
-    },
-
+    webinarLink: { type: String, default: "" },
+    recordedLink: { type: String, default: "" },
     dateTime: { type: Date, required: true },
-
     mentors: [{ type: String }],
+    
+     
+    certificateTemplate: { 
+      type: String, 
+      default: ""  
+    },
+    certificateLayout: {
+      name: { 
+        x: { type: Number, default: 300 }, 
+        y: { type: Number, default: 300 },
+        size: { type: Number, default: 24 },
+        color: { type: String, default: "#000000" } 
+      },
+      date: { 
+        x: { type: Number, default: 300 }, 
+        y: { type: Number, default: 200 },
+        size: { type: Number, default: 14 },
+        color: { type: String, default: "#000000" } 
+      },
+      qr: { 
+        x: { type: Number, default: 300 }, 
+        y: { type: Number, default: 200 },
+        size: { type: Number, default: 14 },
+        color: { type: String, default: "#000000" } 
+      }
+    },
+     
 
-    /**
-     * Registrations
-     * - userId for auth
-     * - email for sending confirmations / certificates
-     */
     registrations: [
       {
         userId: { type: String, required: true },
@@ -48,7 +47,7 @@ const WebinarSchema = new Schema(
   },
   {
     timestamps: true,
-    strict: true,
+    strict: true,  
   }
 );
 

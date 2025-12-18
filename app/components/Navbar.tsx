@@ -356,6 +356,7 @@ export default function Navbar() {
     { name: "Faculty", href: "/faculty" },
     { name: "Webinars", href: "/webinars" },
     { name: "Gallery", href: "/gallery" },
+    { name: "Contact", href:"/contact"},
   ];
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "U";

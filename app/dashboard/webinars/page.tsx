@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   CalendarDays, 
@@ -8,63 +8,57 @@ import {
   Video, 
   PlayCircle, 
   Search,
-  Filter,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  Award,
+  Download
 } from "lucide-react";
 
-// Mock Data
-const WEBINARS = [
-  {
-    id: 1,
-    title: "Advanced ICSI Techniques",
-    date: "Feb 12, 2025",
-    time: "10:00 AM - 12:00 PM EST",
-    status: "upcoming",
-    category: "Clinical",
-    image: "/images/icsi.jpg" // You can use placeholders
-  },
-  {
-    id: 2,
-    title: "AI in Embryo Selection",
-    date: "Feb 18, 2025",
-    time: "02:00 PM - 04:00 PM EST",
-    status: "upcoming",
-    category: "Technology",
-    image: "/images/ai-ivf.jpg"
-  },
-  {
-    id: 3,
-    title: "Cryopreservation Basics",
-    date: "Jan 15, 2025",
-    time: "Recorded Session",
-    status: "past",
-    category: "Lab Skills",
-    image: "/images/cryo.jpg"
-  },
-  {
-    id: 4,
-    title: "Ethics in Assisted Reproduction",
-    date: "Dec 20, 2024",
-    time: "Recorded Session",
-    status: "past",
-    category: "Ethics",
-    image: "/images/ethics.jpg"
-  }
-];
-
 export default function UserWebinarsPage() {
+  const [loading, setLoading] = useState(true);
+  const [webinars, setWebinars] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    async function fetchWebinars() {
+      try {
+        // 👇 FIXED URL HERE
+        const res = await fetch("/api/dashboard/webinars"); 
+        
+        if (res.ok) {
+          const data = await res.json();
+          setWebinars(data);
+        } else {
+          console.error("API Error:", res.status);
+        }
+      } catch (error) {
+        console.error("Failed to load webinars", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWebinars();
+  }, []);
+
   // Filter Logic
-  const filteredWebinars = WEBINARS.filter(w => {
+  const filteredWebinars = webinars.filter(w => {
     const matchesTab = activeTab === "upcoming" ? w.status === "upcoming" : w.status === "past";
     const matchesSearch = w.title.toLowerCase().includes(search.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
+  if (loading) {
+    return (
+      <div className="h-96 flex flex-col items-center justify-center text-slate-400 gap-4">
+        <Loader2 className="animate-spin text-[#1B3A5B]" size={40} />
+        <p>Loading your sessions...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200">
@@ -109,12 +103,15 @@ export default function UserWebinarsPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredWebinars.length > 0 ? (
           filteredWebinars.map((webinar) => (
-            <div key={webinar.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col">
+            <div key={webinar._id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all group flex flex-col">
               
-              {/* Card Image / Placeholder */}
-              <div className="h-48 bg-slate-200 relative flex items-center justify-center">
-                 {/* Replace with <Image /> if you have real images */}
-                 <Video size={40} className="text-slate-400" />
+              {/* Card Image */}
+              <div className="h-48 bg-slate-100 relative flex items-center justify-center overflow-hidden">
+                 {webinar.image ? (
+                   <img src={webinar.image} alt={webinar.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                 ) : (
+                   <Video size={40} className="text-slate-300" />
+                 )}
                  
                  {/* Badge */}
                  <div className="absolute top-4 left-4">
@@ -144,15 +141,34 @@ export default function UserWebinarsPage() {
                 </div>
 
                 {/* Footer Action */}
-                <div className="mt-auto pt-4 border-t border-slate-100">
+                <div className="mt-auto pt-4 border-t border-slate-100 flex gap-2">
+                   
                    {webinar.status === "upcoming" ? (
-                     <Link href={`/dashboard/webinars/${webinar.id}`} className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1B3A5B] text-white rounded-xl font-bold text-sm hover:bg-[#152e4a] transition-colors">
+                     // UPCOMING: Join Button
+                     <Link href={`/webinars/${webinar._id}`} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1B3A5B] text-white rounded-xl font-bold text-sm hover:bg-[#152e4a] transition-colors">
                         Go to Session <ArrowRight size={16} />
                      </Link>
                    ) : (
-                     <Link href={`/dashboard/webinars/${webinar.id}`} className="w-full flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors">
-                        <PlayCircle size={16} /> Watch Recording
-                     </Link>
+                     // PAST: Recording + Certificate
+                     <>
+                        <Link 
+                          href={`/dashboard/webinars/${webinar._id}`} 
+                          className={`flex-1 flex items-center justify-center gap-2 py-2.5 border border-slate-200 rounded-xl font-bold text-sm transition-colors ${webinar.hasCertificate ? 'bg-white text-slate-700 hover:bg-slate-50' : 'bg-[#1B3A5B] text-white hover:bg-[#152e4a]'}`}
+                        >
+                          <PlayCircle size={16} /> {webinar.hasCertificate ? "Recording" : "Watch Recording"}
+                        </Link>
+
+                        {/* Certificate Button (Only if eligible) */}
+                        {webinar.hasCertificate && (
+                           <Link 
+                              href={`/dashboard/certificates/${webinar._id}`} 
+                              target="_blank"
+                              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold text-sm hover:bg-amber-100 transition-colors"
+                           >
+                              <Award size={16} /> Get Certificate
+                           </Link>
+                        )}
+                     </>
                    )}
                 </div>
               </div>
@@ -160,7 +176,11 @@ export default function UserWebinarsPage() {
           ))
         ) : (
           <div className="col-span-full py-20 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-             <p className="text-slate-400">No webinars found in this category.</p>
+             <div className="mx-auto w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mb-3">
+                <Search className="text-slate-400" />
+             </div>
+             <p className="text-slate-500 font-medium">No {activeTab} webinars found.</p>
+             <p className="text-slate-400 text-sm mt-1">Try adjusting your search terms.</p>
           </div>
         )}
       </div>

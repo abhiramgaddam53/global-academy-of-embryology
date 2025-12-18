@@ -75,10 +75,10 @@ export default async function HomePage() {
             {/* CTAs */}
             <div className="flex flex-wrap gap-5">
                <Link 
-                  href="/courses" 
+                  href="/webinars" 
                   className="px-8 py-4 bg-white text-[#0F172A] font-bold uppercase text-xs tracking-widest hover:bg-[#2DD4BF] hover:text-[#0F172A] transition-all duration-300"
                >
-                 Academic Programs
+                Our Programs
                </Link>
                <Link 
                   href="/about" 

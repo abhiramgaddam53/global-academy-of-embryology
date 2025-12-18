@@ -1,9 +1,37 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Video, FileBadge, ArrowRight, Plus, Mail } from "lucide-react";
+import { Users, Video, FileBadge, ArrowRight, Plus, Mail, Loader2 } from "lucide-react";
 
 export default function AdminDashboardPage() {
+  const [stats, setStats] = useState({
+    webinars: 0,
+    faculty: 0,
+    certificates: 0,
+    inquiries: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to load stats", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
@@ -14,7 +42,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Webinars Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
           <div className="flex justify-between items-start">
             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
               <Video size={24} />
@@ -24,13 +52,17 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
           <div className="mt-4">
-            <h3 className="text-3xl font-bold text-slate-900">12</h3>
-            <p className="text-slate-500 text-sm">Active Webinars</p>
+            {loading ? (
+              <Loader2 className="animate-spin text-slate-300" size={24} />
+            ) : (
+              <h3 className="text-3xl font-bold text-slate-900">{stats.webinars}</h3>
+            )}
+            <p className="text-slate-500 text-sm">Upcoming Webinars</p>
           </div>
         </div>
 
         {/* Faculty Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
           <div className="flex justify-between items-start">
              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
               <Users size={24} />
@@ -40,13 +72,17 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
           <div className="mt-4">
-            <h3 className="text-3xl font-bold text-slate-900">8</h3>
+            {loading ? (
+              <Loader2 className="animate-spin text-slate-300" size={24} />
+            ) : (
+              <h3 className="text-3xl font-bold text-slate-900">{stats.faculty}</h3>
+            )}
             <p className="text-slate-500 text-sm">Faculty Members</p>
           </div>
         </div>
 
         {/* Certificates Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
           <div className="flex justify-between items-start">
              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
               <FileBadge size={24} />
@@ -56,13 +92,17 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
           <div className="mt-4">
-            <h3 className="text-3xl font-bold text-slate-900">1.2k</h3>
+            {loading ? (
+              <Loader2 className="animate-spin text-slate-300" size={24} />
+            ) : (
+              <h3 className="text-3xl font-bold text-slate-900">{stats.certificates}</h3>
+            )}
             <p className="text-slate-500 text-sm">Certificates Issued</p>
           </div>
         </div>
 
-        {/* Contact/Inbox Card (New) */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        {/* Inquiries Card */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
           <div className="flex justify-between items-start">
              <div className="p-3 bg-violet-50 text-violet-600 rounded-xl">
               <Mail size={24} />
@@ -72,7 +112,11 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
           <div className="mt-4">
-            <h3 className="text-3xl font-bold text-slate-900">5</h3>
+            {loading ? (
+              <Loader2 className="animate-spin text-slate-300" size={24} />
+            ) : (
+              <h3 className="text-3xl font-bold text-slate-900">{stats.inquiries}</h3>
+            )}
             <p className="text-slate-500 text-sm">New Inquiries</p>
           </div>
         </div>
@@ -83,7 +127,7 @@ export default function AdminDashboardPage() {
       <div className="grid md:grid-cols-2 gap-6">
         
         {/* Branding / Main Action */}
-        <div className="bg-[#1B3A5B] rounded-3xl p-8 text-white relative overflow-hidden">
+        <div className="bg-[#1B3A5B] rounded-3xl p-8 text-white relative overflow-hidden shadow-lg">
           <div className="relative z-10">
             <h3 className="text-xl font-bold mb-2">Manage Certificates</h3>
             <p className="text-blue-100 mb-6 max-w-sm">
@@ -91,7 +135,7 @@ export default function AdminDashboardPage() {
             </p>
             <Link 
               href="/admin/certificates" 
-              className="inline-flex items-center gap-2 bg-[#27B19B] hover:bg-[#1fa88e] text-white px-5 py-2.5 rounded-lg font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-[#27B19B] hover:bg-[#1fa88e] text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-md"
             >
               Go to Certificates <ArrowRight size={18} />
             </Link>
@@ -101,7 +145,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Shortcuts List */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 flex flex-col justify-center">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 flex flex-col justify-center shadow-sm">
             <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Shortcuts</h3>
             <div className="space-y-3">
                 <Link href="/admin/webinars/new" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 group border border-transparent hover:border-slate-200 transition-all">
@@ -120,7 +164,6 @@ export default function AdminDashboardPage() {
                     <ArrowRight size={16} className="text-slate-300 group-hover:text-slate-600" />
                 </Link>
 
-                {/* Added Inbox Shortcut */}
                 <Link href="/admin/contact" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 group border border-transparent hover:border-slate-200 transition-all">
                     <span className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
                          <div className="p-1.5 bg-violet-100 text-violet-600 rounded-lg"><Mail size={16}/></div>

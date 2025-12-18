@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     await connectToDB();
     const body = await req.json();
-
+    console.log(body)
     // 🔍 Required validation
     if (!body.title || !body.dateTime) {
       return NextResponse.json(
@@ -36,6 +36,10 @@ export async function POST(req: Request) {
       description: body.description || "",
       imageUrl: body.imageUrl || "",
 
+      // FIX: Add certificate fields to save them in DB
+      certificateTemplate: body.certificateTemplate || "",
+      certificateLayout: body.certificateLayout || {}, 
+
       webinarLink: body.webinarLink || "", // live link (optional)
       recordedLink: "", // empty at creation
 
@@ -44,7 +48,7 @@ export async function POST(req: Request) {
 
       registrations: [],
     };
-
+    console.log(webinarData)
     const webinar = await Webinar.create(webinarData);
 
     return NextResponse.json(webinar, { status: 201 });

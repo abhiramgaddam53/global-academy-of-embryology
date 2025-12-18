@@ -4,16 +4,22 @@ import Webinar from "@/app/models/Webinar";
 import { getUserFromToken } from "@/lib/getUserFromToken";
 import { ObjectId } from "mongodb";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  req: Request, 
+  { params }: { params: Promise<{ id: string }> } // 1. FIX: Type is Promise
+) {
   try {
     const user = await getUserFromToken();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectToDB();
 
+    // 2. FIX: Await the params to get the ID
+    const { id } = await params; 
+    const webinarId = id;
+
     // Fix ID matching
     const userId = user.id || user._id || user.userId || user.sub;
-    const webinarId = params.id;
 
     // 1. Find the Webinar
     const webinar = await Webinar.findById(webinarId).lean();
@@ -34,12 +40,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Certificate available only after the event." }, { status: 403 });
     }
 
-    // 4. Return Data needed to draw the certificate
+    // 4. Return Data
     return NextResponse.json({
       details: {
         studentName: user.name || "Student Name",
         date: new Date(webinar.dateTime).toLocaleDateString(),
-        certificateId: registration._id || new ObjectId(), // Unique ID for QR verification
+        certificateId: registration._id || new ObjectId(),
         webinarTitle: webinar.title
       },
       template: webinar.certificateTemplate,

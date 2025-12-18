@@ -39,3 +39,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+// DELETE: Remove a specific message (Admin Only)
+export async function DELETE(request: NextRequest) {
+  try {
+    // Verify Admin
+    const admin = await verifyAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    // Get ID from Query Parameters (e.g., /api/contact?id=65a...)
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Message ID is required" }, { status: 400 });
+    }
+
+    await connectToDB();
+    const deletedMessage = await Contact.findByIdAndDelete(id);
+
+    if (!deletedMessage) {
+      return NextResponse.json({ error: "Message not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: "Message deleted successfully" });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

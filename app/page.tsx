@@ -6,11 +6,13 @@ import Webinar from "@/app/models/Webinar";
 import Faculty from "@/app/models/Faculty";
 import Leadership from "./components/LeaderShip";
 
+export const revalidate = 300;  
+
 // --- Data Fetching ---
 async function getHomeData() {
   try {
     await connectToDB();
-    
+
     // Fetch Webinars (Next 3 upcoming)
     const webinars = await Webinar.find({ dateTime: { $gte: new Date() } })
       .sort({ dateTime: 1 })

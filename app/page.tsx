@@ -7,7 +7,7 @@ import Faculty from "@/app/models/Faculty";
 import Leadership from "./components/LeaderShip";
 
 export const revalidate = 300;  
-
+export const dynamic = "force-dynamic"; 
 // --- Data Fetching ---
 async function getHomeData() {
   try {
@@ -19,7 +19,7 @@ async function getHomeData() {
       .limit(3)
       .lean();
 
-    // Fetch Visionaries (Filter for top leadership)
+    // Fetch Visionaries  
     const visionaries = await Faculty.find({ 
       designation: { $regex: /Founder|Director|Chairman|President/i } 
     })
@@ -234,7 +234,7 @@ export default async function HomePage() {
 
              {/* Right: The Image (Clean, Professional) */}
              <div className="relative">
-                <div className="aspect-[4/5] relative bg-white/5 border border-white/10 p-2">
+                <div className="aspect-4/5  relative bg-white/5 border border-white/10 p-2">
                    <div className="relative w-full h-full overflow-hidden md:grayscale md:hover:grayscale-0 transition-all duration-700">
                       <Image 
                         src="/founder.webp" 

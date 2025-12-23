@@ -211,26 +211,34 @@ export default async function HomePage() {
              
              {/* Left: The Letter */}
              <div>
-               <div className="flex items-center gap-3 mb-8">
+               <div className="flex items-center gap-3 mb-6">
                   <div className="h-px w-10 bg-[#2DD4BF]"></div>
-                  <span className="text-[#2DD4BF] font-bold tracking-widest uppercase text-xs">Director's Address</span>
+                  <span className="text-[#2DD4BF] font-bold tracking-widest uppercase text-xs">Founder's Message</span>
                </div>
                
-               <blockquote className="text-2xl md:text-3xl font-serif leading-relaxed italic mb-8 text-slate-200">
-                 "Our vision was never to build just another academy. We founded GAE to be a sanctuary for science. Here, the art of embryology meets the rigour of medicine."
-               </blockquote>
+               {/* Updated: Using text-lg for better readability of longer text 
+                  and maintaining the exact wording provided.
+               */}
+               <div className="space-y-6 font-serif text-lg md:text-xl leading-relaxed text-slate-200 italic mb-8">
+                 <p>
+                   "Embryology is the silent backbone of Assisted Reproductive Technology - where precision, science, ethics and responsibility converge to create life. As an embryologist, I strongly believe that continuous learning, strong fundamentals, and ethical laboratory practices are the true drivers of successful ART outcomes."
+                 </p>
+                 <p>
+                   "During my own learning journey in embryology, knowledge was primarily passed from seniors to juniors through observation, discussion, and hands-on experience. Structured online learning platforms were not available, and access to quality training largely depended on the mentorship and environment one was exposed to."
+                 </p>
+               </div>
                
                <div className="space-y-1 text-slate-400 font-light">
-                 <p>Dr. Aniruddha Singh</p>
-                 <p className="text-xs uppercase tracking-wider text-[#2DD4BF] font-bold">Founder & Director</p>
+                 <p className="text-white font-medium text-lg">Dr. V. Lenin Babu</p>
+                 <p className="text-xs uppercase tracking-wider text-[#2DD4BF] font-bold">Founder - GAE</p>
                </div>
 
-               <div className="mt-10">
+               <div className="mt-8">
                  <Link href="/about" className="px-8 py-3 border border-white/20 hover:bg-white hover:text-[#0F172A] transition-all text-xs font-bold uppercase tracking-widest inline-block">
                    Read Full Letter
                  </Link>
                </div>
-             </div>
+             </div> 
 
              {/* Right: The Image (Clean, Professional) */}
              <div className="relative">
@@ -238,7 +246,7 @@ export default async function HomePage() {
                    <div className="relative w-full h-full overflow-hidden md:grayscale md:hover:grayscale-0 transition-all duration-700">
                       <Image 
                         src="/founder.webp" 
-                        alt="Dr. Aniruddha Singh" 
+                        alt="Dr.V.Lenin Babu" 
                         fill 
                         className="object-cover"
                         unoptimized
@@ -270,87 +278,96 @@ export default async function HomePage() {
   </div>
 </div>
 
-    <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-8">
-      {[{
-        name: "Mr. V. Hemanth",
-        role: "Associate Founder",
-        desc: "Visionary Leader",
-      },
-        {
-          name: "Mr. Fyzullah Syed",
-        role: "Associate Founder",
-        desc: "Visionary Leader", 
-        },
-
-        {
-          name: "Mr. B. Siddesh",
-          role: "Co-Founder",
-          desc: "Visionary Leader",
-        },
-        {
-          name: "Mr. Balu",
-          role: "Co-Founder",
-          desc: "Strategic Operations",
-        },
-        {
-          name: "Mr. Nishanth Singh",
-          role: "Co-Founder",
-          desc: "Technical Director",
-        },
-        {
-          name: "Mr. P. Midhun Chakravarthy",
-          role: "Founding Member",
-          desc: "Core Initiative Lead",
-        },
-        {
-          name: "Dr. Swapna Srinath",
-          role: "Chief Clinical Advisor",
-          desc: "Clinical Excellence",
-        },
-        {
-          name: "Dr. Charulata Chatterjee",
-          role: "Chief Scientific Advisor",
-          desc: "Research & Innovation",
-        },
-        {
-          name: "Mr. T. Suresh Kumar",
-          role: "Advisor – Embryology",
-          desc: "Senior Embryologist",
-        },
-        {
-          name: "Ms. Naga Deepthi",
-          role: "Content Creator",
-          desc: "Creative Strategy",
-        },
-      ].map((member, index) => (
-        <div
-          key={index}
-          className="bg-white p-6 border border-slate-200 hover:border-[#0D9488]/50 transition-colors group text-center"
-        >
-          <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full mb-4 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500 relative">
-            {/* Placeholder for Advisor Image */}
-            <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
-              <Users size={24} />
-            </div>
-            {/* Uncomment below when you have images:
-                <img src={`/team/${member.name.toLowerCase().replace(/ /g, '-')}.jpg`} alt={member.name} className="w-full h-full object-cover" />
-            */}
-          </div>
-          <h4 className="font-serif text-lg text-[#0F172A] mb-1">{member.name}</h4>
-          <p className="text-[#0D9488] text-[10px] font-bold uppercase tracking-widest mb-2">
-            {member.role}
-          </p>
-          <p className="text-slate-500 text-sm font-light">{member.desc}</p>
-        </div>
-      ))}
+<div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-8">
+  {[
+    {
+      name: "Mr. V. Hemanth",
+      role: "Associate Founder",
+      desc: "Visionary Leader",
+      image: "/Dr_V-Hemanth.webp"
+    },
+    {
+      name: "Mr. Fyzullah Syed",
+      role: "Associate Founder",
+      desc: "Visionary Leader",
+      image: "/Fyzullah-Syed.webp"
+    },
+    {
+      name: "Mr. B. Siddesh",
+      role: "Co-Founder",
+      desc: "Visionary Leader",
+      image: "/B-Siddesh.webp"
+    },
+    {
+      name: "Mr. Balu",
+      role: "Co-Founder",
+      desc: "Strategic Operations",
+      image: "/Dr-Balu.webp"
+    },
+    {
+      name: "Mr. Nishanth Singh",
+      role: "Co-Founder",
+      desc: "Technical Director",
+      image: "/Nishanth-Singh.webp"
+    },
+    {
+      name: "Mr. P. Midhun Chakravarthy",
+      role: "Founding Member",
+      desc: "Core Initiative Lead",
+      image: "/Midhun-Chakravarthy.jpeg"
+    },
+    {
+      name: "Dr. Swapna Srinath",
+      role: "Chief Clinical Advisor",
+      desc: "Clinical Excellence",
+      image: "/Dr_Swapna-Srinath.webp"
+    },
+    {
+      name: "Dr. Charulata Chatterjee",
+      role: "Chief Scientific Advisor",
+      desc: "Research & Innovation",
+      image: "/Dr_Charulata-Chatterjee.webp"
+    },
+    {
+      name: "Mr. T. Suresh Kumar",
+      role: "Advisor – Embryology",
+      desc: "Senior Embryologist",
+      image: "/Suresh-Kumar.webp"
+    },
+     
+  ].map((member, index) => (
+    <div
+      key={index}
+      className="bg-white p-6 border border-slate-200 hover:border-[#0D9488]/50 transition-colors group text-center"
+    >
+      <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full mb-4 overflow-hidden transition-all duration-500 relative">
+        {member.image ? (
+           <img 
+             src={member.image || ""} 
+             alt={member.name || ""} 
+             className="w-full h-full object-cover" 
+           />
+        ) : (
+           <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
+             <Users size={24} />
+           </div>
+        )}
+      </div>
+      <h4 className="font-serif text-lg text-[#0F172A] mb-1">{member.name || ""}</h4>
+      <p className="text-[#0D9488] text-[10px] font-bold uppercase tracking-widest mb-2">
+        {member.role || ""}
+      </p>
+      <p className="text-slate-500 text-sm font-light">{member.desc || ""}</p>
     </div>
+  ))}
+</div>
         </div>
       </section>
 
       {/* =========================================
           6. FOOTER CTA: Membership
       ========================================= */}
-       <Leadership></Leadership>
+       
 
     </main>
   );

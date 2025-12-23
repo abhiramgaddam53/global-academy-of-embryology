@@ -134,7 +134,7 @@ export default function UserDashboardPage() {
                  {user.name.charAt(0)}
               </div>
               <h3 className="text-lg font-bold">Student Profile</h3>
-              <p className="text-blue-200 text-sm opacity-80">{user.id}</p>
+              <p className="text-blue-200 text-sm opacity-80">{user.id  }</p>
            </div>
 
            <div className="space-y-4">

@@ -29,15 +29,9 @@ export async function GET(req: Request) {
     if (allWebinars.length === 0) {
       // If 0 found, let's look at ONE webinar to see how registrations are actually saved
       const sample = await Webinar.findOne({ "registrations": { $exists: true, $not: { $size: 0 } } }).lean();
-      if (sample && sample.registrations.length > 0) {
-        console.log("4. SAMPLE REGISTRATION DATA (Compare this ID with Step 2):");
-        console.log(sample.registrations[0]);
-      } else {
-        console.log("4. No webinars have ANY registrations yet.");
-      }
+       
     }
-    // console.log("--- DEBUG END ---");
-
+ 
     /* ================= PROCESSING (Standard Logic) ================= */
     const now = new Date();
     const upcoming = [];

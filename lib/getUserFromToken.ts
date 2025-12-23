@@ -8,7 +8,8 @@ export async function getUserFromToken() {
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
   if (!token) return null;
-
   const user = verifyToken(token);
+  console.log(user)
+
   return user || null;
 }

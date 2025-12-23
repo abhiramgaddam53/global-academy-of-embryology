@@ -151,7 +151,7 @@ export default function AddFacultyPage() {
               <input 
                 type="email"
                 required
-                value={formData.email}
+                value={formData.email || " " }
                 onChange={e => setFormData({...formData, email: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none"
                 placeholder="john@example.com"
@@ -164,7 +164,7 @@ export default function AddFacultyPage() {
               <label className="text-sm font-medium text-slate-700">Designation</label>
               <input 
                 required
-                value={formData.designation}
+                value={formData.designation || " " }
                 onChange={e => setFormData({...formData, designation: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none"
                 placeholder="Senior Embryologist"
@@ -174,7 +174,7 @@ export default function AddFacultyPage() {
               <label className="text-sm font-medium text-slate-700">Specialization</label>
               <input 
                 required
-                value={formData.specialization}
+                value={formData.specialization || " " }
                 onChange={e => setFormData({...formData, specialization: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none"
                 placeholder="IVF, Andrology..."
@@ -186,7 +186,7 @@ export default function AddFacultyPage() {
              <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Experience</label>
               <input 
-                value={formData.experience}
+                value={formData.experience || 0 }
                 onChange={e => setFormData({...formData, experience: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none"
                 placeholder="10+ Years"
@@ -195,7 +195,7 @@ export default function AddFacultyPage() {
              <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Education</label>
               <input 
-                value={formData.education}
+                value={formData.education || " " }
                 onChange={e => setFormData({...formData, education: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none"
                 placeholder="PhD, MSc..."
@@ -212,7 +212,7 @@ export default function AddFacultyPage() {
             <label className="text-sm font-medium text-slate-700">Biography</label>
             <textarea 
               rows={4}
-              value={formData.bio}
+              value={formData.bio ||  " " }
               onChange={e => setFormData({...formData, bio: e.target.value})}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#27B19B]/20 focus:border-[#27B19B] outline-none resize-none"
               placeholder="Dr. John has over 15 years of experience..."

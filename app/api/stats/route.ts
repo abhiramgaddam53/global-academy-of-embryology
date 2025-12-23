@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Webinar from "@/app/models/Webinar";
-import Faculty from "@/app/models/Faculty"; // Uncomment if you have this model
-import Contact from "@/app/models/Contact"; // Uncomment if you have this model
-
+import Faculty from "@/app/models/Faculty";  
+import Contact from "@/app/models/Contact";  
 export async function GET() {
   try {
     await connectToDB();
@@ -14,8 +13,7 @@ export async function GET() {
     const activeWebinarsCount = await Webinar.countDocuments({ dateTime: { $gte: now } });
 
     // 2. Certificates Issued 
-    // Logic: Sum of all registrations for webinars that have already ended
-    const certStats = await Webinar.aggregate([
+     const certStats = await Webinar.aggregate([
       { $match: { dateTime: { $lt: now } } }, // Filter for past webinars
       { $project: { count: { $ifNull: [{ $size: "$registrations" }, 0] } } }, // Count attendees
       { $group: { _id: null, total: { $sum: "$count" } } } // Sum all counts

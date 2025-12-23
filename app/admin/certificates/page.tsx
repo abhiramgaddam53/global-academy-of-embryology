@@ -97,16 +97,7 @@ export default function AdminCertificatesPage() {
           </div>
         </div>
 
-        {/* Card 3: Potential Issuance */}
-        {/* <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-            <FileBadge size={24} />
-          </div>
-          <div>
-            <p className="text-slate-500 text-sm font-medium">Potential Issuance</p>
-            <h3 className="text-2xl font-bold text-slate-900">{data.stats.totalIssued}</h3>
-          </div>
-        </div> */}
+         
       </div>
 
       {/* Main Content Area */}

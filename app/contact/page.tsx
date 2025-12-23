@@ -45,7 +45,7 @@ export default function ContactPage() {
             Contact the <span className="italic text-slate-400">Secretariat.</span>
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
-            For inquiries regarding admissions, partnerships, or general information, please reach out to our global office.
+            For inquiries regarding admissions, partnerships, or general information, please reach out to us.
           </p>
         </div>
       </section>
@@ -58,11 +58,11 @@ export default function ContactPage() {
             {/* LEFT: Contact Info */}
             <div className="space-y-12">
               <div>
-                <h2 className="text-3xl font-serif text-[#0F172A] mb-6">Global Headquarters</h2>
+                <h2 className="text-3xl font-serif text-[#0F172A] mb-6">Contact Info</h2>
                 <div className="w-16 h-1 bg-[#0D9488] mb-8" />
-                <p className="text-slate-600 text-lg leading-relaxed">
+                {/* <p className="text-slate-600 text-lg leading-relaxed">
                   We operate globally with partner labs in multiple continents. Our central administration manages all academic and clinical inquiries.
-                </p>
+                </p> */}
               </div>
 
               <div className="space-y-8">
@@ -73,9 +73,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-serif text-xl text-[#0F172A] mb-2">Visit Us</h3>
                     <p className="text-slate-500 font-light">
-                      Global Academy of Embryology <br />
-                      123 Science Park Drive, Innovation Hub <br />
-                      London, UK - SW1A 1AA
+                       Komali Fertility Centre <br />
+                      A Unit of Aster Ramesh Hospital <br />
+                      Guntur - 522004  
                     </p>
                   </div>
                 </div>
@@ -86,8 +86,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-serif text-xl text-[#0F172A] mb-2">Email Us</h3>
-                    <p className="text-slate-500 font-light">admissions@gae-edu.org</p>
-                    <p className="text-slate-500 font-light">info@gae-edu.org</p>
+                    <p className="text-slate-500 font-light">lenin@globalacademyofembryology.org </p>
+                    {/* <p className="text-slate-500 font-light">info@gae-edu.org</p> */}
                   </div>
                 </div>
 
@@ -97,8 +97,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-serif text-xl text-[#0F172A] mb-2">Call Us</h3>
-                    <p className="text-slate-500 font-light">+44 20 7946 0958</p>
-                    <p className="text-slate-400 text-sm mt-1">(Mon-Fri, 9am - 6pm GMT)</p>
+                    <p className="text-slate-500 font-light">+91 6302665757</p>
+                    <p className="text-slate-400 text-sm mt-1">(Mon-Fri, 9am - 6pm IST)</p>
                   </div>
                 </div>
               </div>

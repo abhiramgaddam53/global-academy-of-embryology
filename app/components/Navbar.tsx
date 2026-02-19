@@ -93,6 +93,8 @@ export default function Navbar() {
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "U";
   const isLoggedIn = !!user;
+  const dashboardPath =
+  user?.role === "admin" ? "/admin" : "/dashboard";
 
   // 4. Helper Component: Profile Avatar
   const ProfileAvatar = ({ size = 36, fontSize = "text-sm" }: { size?: number, fontSize?: string }) => {
@@ -186,8 +188,8 @@ export default function Navbar() {
                     </div>
 
                     <div className="py-2">
-                      <Link href="/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#1B3A5B]">
-                        <LayoutDashboard size={16} /> Dashboard
+                      <Link href={dashboardPath}  onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#1B3A5B]">
+                        <LayoutDashboard size={16} /> {user.role ==="admin" ? "Admin Panal" : "Dashboard" }
                       </Link>
                       <Link href="/profile" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#1B3A5B]">
                         <Settings size={16} /> Profile Settings
@@ -258,11 +260,11 @@ export default function Navbar() {
                </div>
                <div className="mt-4 grid grid-cols-2 gap-3">
                   <Link 
-                    href="/dashboard" 
+                    href={dashboardPath} 
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 text-[#1B3A5B] text-sm font-medium shadow-sm active:scale-95 transition-all"
                   >
-                    <LayoutDashboard size={18} /> Dashboard
+                    <LayoutDashboard size={18} /> {user.role ==="admin" ? "Admin Panal" : "Dashboard" }
                   </Link>
                   <Link 
                     href="/profile" 

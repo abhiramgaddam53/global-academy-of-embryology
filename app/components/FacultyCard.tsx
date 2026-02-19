@@ -5,9 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
-// Use 'any' if you want to avoid strict type imports, 
-// or import the interface from your page file if preferred.
-interface FacultyProps {
+ interface FacultyProps {
   slug: string;
   name: string;
   designation: string;

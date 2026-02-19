@@ -9,7 +9,6 @@ export async function getUserFromToken() {
 
   if (!token) return null;
   const user = verifyToken(token);
-  console.log(user)
-
+ 
   return user || null;
 }

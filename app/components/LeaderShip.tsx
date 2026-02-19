@@ -4,8 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
-// Updated data structure with images and longer messages
-const leaders = [
+ const leaders = [
   {
     id: 1,
     name: "Mr. V.Hemanth",

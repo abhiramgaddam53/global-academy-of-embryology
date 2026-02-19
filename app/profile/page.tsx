@@ -1,5 +1,3 @@
- 
-
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -27,7 +25,8 @@ import {
   Lock,
   Eye,
   EyeOff,
-  KeyRound
+  KeyRound,
+  Loader2
 } from "lucide-react";
 import AnimatedLogoLoader from "../components/AnimatedLogoLoader"; 
 import Navbar from "../components/Navbar";
@@ -131,6 +130,9 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
+  // Upload State
+  const [uploadingImg, setUploadingImg] = useState(false);
+
   // Password Modal State
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: "", new: "", confirm: "" });
@@ -146,7 +148,7 @@ export default function ProfilePage() {
     address: "",
     workExp: "",
     mobile: "",
-    image: "", // Stores Base64 string
+    image: "", 
   });
 
   // Load User Data
@@ -200,23 +202,58 @@ export default function ProfilePage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  // --- SIMPLE IMAGE UPLOAD (No Crop) ---
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // --- SERVER-SIDE UPLOAD (FormData) ---
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Convert to Base64
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      setForm((prev) => ({ ...prev, image: base64 }));
-      setEditing(true); // Automatically allow saving
-    };
+    // Client-side validations
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+        setMessage({ type: 'error', text: "Invalid file type. Only JPG, PNG, and WebP are allowed." });
+        return;
+    }
+    if (file.size > 15 * 1024 * 1024) { // 15MB limit
+        setMessage({ type: 'error', text: "Image size must be less than 15MB." });
+        return;
+    }
+
+    setUploadingImg(true);
+    setMessage(null);
+
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "profiles"); // Specific folder for profiles
+
+        const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData, // Automatically sets 'multipart/form-data'
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.error || "Failed to upload image");
+        }
+
+        // Update form state with the returned S3 URL
+        setForm((prev) => ({ ...prev, image: data.url }));
+        setEditing(true); 
+        setMessage({ type: 'success', text: "Image uploaded! Click 'Save Changes' to confirm." });
+
+    } catch (error: any) {
+        console.error(error);
+        setMessage({ type: 'error', text: error.message || "Image upload failed. Please try again." });
+    } finally {
+        setUploadingImg(false);
+    }
   };
 
   const triggerFileInput = () => {
-    fileInputRef.current?.click();
+    if (!uploadingImg) {
+        fileInputRef.current?.click();
+    }
   };
 
   async function handleSave(e: React.FormEvent) {
@@ -404,10 +441,15 @@ export default function ProfilePage() {
               
               {/* Profile Image Area */}
               <div className="pt-10 pb-6 flex flex-col items-center bg-gradient-to-b from-slate-50 to-white">
-                <div className="relative group cursor-pointer" onClick={triggerFileInput}>
+                <div 
+                    className={`relative group ${uploadingImg ? 'cursor-wait' : 'cursor-pointer'}`} 
+                    onClick={triggerFileInput}
+                >
                   <div className="w-32 h-32 rounded-full bg-[#1B3A5B] text-white flex items-center justify-center text-4xl font-bold shadow-xl border-4 border-white relative z-10 overflow-hidden">
-                    {form.image ? (
-                        <Image src={form.image} alt="Profile" fill className="object-cover" />
+                    {uploadingImg ? (
+                        <Loader2 className="animate-spin text-white" size={32} />
+                    ) : form.image ? (
+                        <Image src={form.image} alt="Profile" fill className="object-cover" unoptimized/>
                     ) : (
                         <span>{form.name?.[0]?.toUpperCase()}</span>
                     )}
@@ -418,11 +460,14 @@ export default function ProfilePage() {
                     ref={fileInputRef}
                     className="hidden"
                     accept="image/*"
-                    onChange={handleImageUpload} // Simple upload
+                    onChange={handleImageUpload} 
+                    disabled={uploadingImg}
                   />
-                  <div className="absolute bottom-1 right-1 z-20 bg-white p-2 rounded-full shadow-md text-slate-400 group-hover:text-[#1B3A5B] transition-colors hover:scale-110">
-                    <Camera size={18} />
-                  </div>
+                  {!uploadingImg && (
+                    <div className="absolute bottom-1 right-1 z-20 bg-white p-2 rounded-full shadow-md text-slate-400 group-hover:text-[#1B3A5B] transition-colors hover:scale-110">
+                        <Camera size={18} />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="text-center mt-4 px-6">

@@ -106,6 +106,7 @@ export default function Navbar() {
             src={user.image} 
             alt="Profile" 
             fill 
+            unoptimized
             className="object-cover" 
           />
         </div>

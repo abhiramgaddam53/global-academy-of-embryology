@@ -110,7 +110,7 @@ export default function CertificatePreviewModal({
                   style={{
                     left: layout.nameX * scale,
                     top: layout.nameY * scale,
-                    fontSize: `${Math.max(10, 24 * scale)}px`, 
+                    fontSize: `${Math.max(10, 80 * scale)}px`, 
                     transform: 'translateY(-50%)', 
                     border: '1px dashed rgba(0, 0, 0, 0.5)',
                     backgroundColor: 'rgba(2, 7, 19, 0.1)',
@@ -126,7 +126,7 @@ export default function CertificatePreviewModal({
                   style={{
                     left: layout.dateX * scale,
                     top: layout.dateY * scale,
-                    fontSize: `${Math.max(8, 14 * scale)}px`,
+                    fontSize: `${Math.max(10, 60 * scale)}px`,
                     transform: 'translateY(-50%)',
                     border: '1px dashed rgba(71, 85, 105, 0.5)',
                     backgroundColor: 'rgba(126, 128, 131, 0.1)',
@@ -142,15 +142,15 @@ export default function CertificatePreviewModal({
                   style={{
                     left: qrX * scale,
                     top: qrY * scale,
-                    width: `${Math.max(30, 80 * scale)}px`, // Base size 80px
-                    height: `${Math.max(30, 80 * scale)}px`,
+                    width: `${Math.max(30, 220 * scale)}px`, // Base size 80px
+                    height: `${Math.max(30, 220 * scale)}px`,
                     transform: 'translate(-50%, -50%)', // Centered on coordinate
                     border: '1px dashed rgba(0, 0, 0, 0.5)',
                     backgroundColor: 'rgba(255, 255, 255, 0.8)'
                   }}
                 >
                   <QrCode 
-                    size={Math.max(20, 60 * scale)} 
+                    size={Math.max(20, 200 * scale)} 
                     className="text-slate-900"
                     strokeWidth={1.5}
                   />

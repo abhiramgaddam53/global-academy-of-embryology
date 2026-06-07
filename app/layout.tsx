@@ -10,6 +10,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L49DSL9T79"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L49DSL9T79');
+</script>
           <link rel="icon" type="image/webp" href="/favicon.webp"/>
           <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
         <title>Global Academy Embryology</title>
